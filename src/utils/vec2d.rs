@@ -97,14 +97,15 @@ impl<T> Vec2D<T> {
 
         for dy in 0..sub_height {
             for dx in 0..sub_width {
-                *sub_vec.get_mut(dy, dx) = self.get((y + dy) % self.height, (x + dx) % self.width).clone();
+                *sub_vec.get_mut(dy, dx) = self
+                    .get((y + dy) % self.height, (x + dx) % self.width)
+                    .clone();
             }
         }
 
         sub_vec
     }
 }
-
 
 #[cfg(test)]
 mod tests {
