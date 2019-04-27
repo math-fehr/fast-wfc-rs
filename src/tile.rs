@@ -85,7 +85,7 @@ fn generate_action_map(symmetry: &Symmetry) -> Vec<Vec<usize>> {
 }
 
 /// Generate all distincts orientations of a 2D array given its symmetry type.
-fn generate_oriented<T>(data: Vec2D<T>, symmetry: &Symmetry) -> Vec<Vec2D<T>>
+pub fn generate_oriented<T>(data: Vec2D<T>, symmetry: &Symmetry) -> Vec<Vec2D<T>>
 where
     T: Clone,
 {
@@ -107,6 +107,7 @@ where
             for _ in 0..3 {
                 oriented.push(oriented.last().unwrap().rotated())
             }
+
             oriented.push(oriented.last().unwrap().reflected());
             for _ in 0..3 {
                 oriented.push(oriented.last().unwrap().rotated())
@@ -120,6 +121,7 @@ where
 /// 2D Objects that are reflections and rotations of themselves.
 /// Item i is obtained by doing action i on item 0.
 /// See [generate_action_map] to see what actions do.
+#[derive(Clone)]
 pub struct Tile<T> {
     data: Vec<Vec2D<T>>,
     symmetry: Symmetry,
@@ -143,5 +145,22 @@ impl<T> Tile<T> {
     /// Get the symmetry kinds of the tile.
     pub fn symmetry(&self) -> Symmetry {
         self.symmetry
+    }
+}
+
+
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    #[test]
+    fn test_generate_oriented() {
+        let data = Vec2D::from_vec(1, 2, vec![1, 2]);
+        let oriented_data = generate_oriented(data, &Symmetry::T);
+
+        assert!(oriented_data[0] == Vec2D::from_vec(1, 2, vec![1, 2]));
+        assert!(oriented_data[1] == Vec2D::from_vec(2, 1, vec![2, 1]));
+        assert!(oriented_data[2] == Vec2D::from_vec(1, 2, vec![2, 1]));
+        assert!(oriented_data[3] == Vec2D::from_vec(2, 1, vec![1, 2]));
     }
 }
