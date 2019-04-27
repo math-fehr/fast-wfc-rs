@@ -1,3 +1,7 @@
+//! Contain implementation of Vec2D, a 2D matrix represented by a Vec.
+
+/// A 2D matrix represented by a Vec.
+/// The Vec contains the values line after line.
 #[derive(Clone, PartialEq, Eq, Debug)]
 pub struct Vec2D<T> {
     height: usize,
@@ -6,6 +10,8 @@ pub struct Vec2D<T> {
 }
 
 impl<T> Vec2D<T> {
+
+    /// Create a matrix given its height and width, that is filled with a value
     pub fn new(height: usize, width: usize, value: &T) -> Vec2D<T>
     where
         T: Clone,
@@ -18,6 +24,8 @@ impl<T> Vec2D<T> {
         }
     }
 
+    /// Create a Vec2D given a vector representing its data, and the Vec2D size.
+    /// The vector should be of the size height*width.
     pub fn from_vec(height: usize, width: usize, data: Vec<T>) -> Vec2D<T> {
         assert!(height * width == data.len());
         Vec2D {
@@ -27,24 +35,31 @@ impl<T> Vec2D<T> {
         }
     }
 
+    /// Get the height of the Vec2D.
     pub fn height(&self) -> usize {
         self.height
     }
 
+    /// Get the width of the Vec2D.
     pub fn width(&self) -> usize {
         self.width
     }
 
+    /// Get a reference on the value in position (y,x) in the Vec2D.
+    /// y should be less than height, and x less than width.
     pub fn get(&self, y: usize, x: usize) -> &T {
         assert!(y < self.height && x < self.width);
         &self.data[x + y * self.width]
     }
 
+    /// Get a mutable reference on the value in position (y,x) in the Vec2D.
+    /// y should be less than height, and x less than width.
     pub fn get_mut(&mut self, y: usize, x: usize) -> &mut T {
         assert!(y < self.height && x < self.width);
         &mut self.data[x + y * self.width]
     }
 
+    /// Get the reflection along the x axis.
     pub fn reflected(&self) -> Vec2D<T>
     where
         T: Clone,
@@ -63,6 +78,7 @@ impl<T> Vec2D<T> {
         Vec2D::from_vec(self.height, self.width, data)
     }
 
+    /// Get the 90° anticlockwise rotation.
     pub fn rotated(&self) -> Vec2D<T>
     where
         T: Clone,
@@ -82,13 +98,12 @@ impl<T> Vec2D<T> {
         new_vec
     }
 
+    /// Get a submatrix given its upper leftmost position, and its size.
+    /// The matrices are here considered toric.
     pub fn get_sub_vec(&self, y: usize, x: usize, sub_height: usize, sub_width: usize) -> Vec2D<T>
     where
         T: Clone,
     {
-        assert!(sub_width <= self.width);
-        assert!(sub_height <= self.height);
-
         if self.data.len() == 0 {
             return Vec2D::from_vec(self.height, self.width, vec![]);
         }
