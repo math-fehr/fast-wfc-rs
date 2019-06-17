@@ -1,5 +1,7 @@
 //! Contain implementation of Vec2D, a 2D matrix represented by a Vec.
 
+use std::hash::{Hash, Hasher};
+
 /// A 2D matrix represented by a Vec.
 /// The Vec contains the values line after line.
 #[derive(Clone, PartialEq, Eq, Debug)]
@@ -7,6 +9,14 @@ pub struct Vec2D<T> {
     height: usize,
     width: usize,
     data: Vec<T>,
+}
+
+impl<T: Hash> Hash for Vec2D<T> {
+    fn hash<H: Hasher>(&self, state: &mut H) {
+        self.height.hash(state);
+        self.width.hash(state);
+        self.data.hash(state);
+    }
 }
 
 impl<T> Vec2D<T> {
@@ -33,6 +43,11 @@ impl<T> Vec2D<T> {
             width,
             data,
         }
+    }
+
+    /// Get the Vec2D data as a Vec.
+    pub fn to_vec(self) -> Vec<T> {
+        self.data
     }
 
     /// Get the height of the Vec2D.
