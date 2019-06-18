@@ -20,7 +20,6 @@ impl<T: Hash> Hash for Vec2D<T> {
 }
 
 impl<T> Vec2D<T> {
-
     /// Create a matrix given its height and width, that is filled with a value
     pub fn new(height: usize, width: usize, value: &T) -> Vec2D<T>
     where
@@ -37,7 +36,7 @@ impl<T> Vec2D<T> {
     /// Create a Vec2D given a vector representing its data, and the Vec2D size.
     /// The vector should be of the size height*width.
     pub fn from_vec(height: usize, width: usize, data: Vec<T>) -> Vec2D<T> {
-        assert!(height * width == data.len());
+        assert_eq!(height * width, data.len());
         Vec2D {
             height,
             width,
@@ -144,7 +143,7 @@ mod tests {
     #[test]
     fn test_get_mut() {
         let mut vec = Vec2D::from_vec(2, 3, vec![0, 1, 2, 3, 4, 5]);
-        assert!(*vec.get_mut(1, 2) == 5);
+        assert_eq!(*vec.get_mut(1, 2), 5);
     }
 
     #[test]
@@ -157,7 +156,7 @@ mod tests {
     #[test]
     fn test_get() {
         let vec = Vec2D::from_vec(2, 3, vec![0, 1, 2, 3, 4, 5]);
-        assert!(*vec.get(1, 2) == 5);
+        assert_eq!(*vec.get(1, 2), 5);
     }
 
     #[test]
@@ -171,39 +170,39 @@ mod tests {
     fn test_reflected() {
         let vec = Vec2D::from_vec(2, 3, vec![0, 1, 2, 3, 4, 5]);
         let vec_result = Vec2D::from_vec(2, 3, vec![2, 1, 0, 5, 4, 3]);
-        assert!(vec.reflected() == vec_result);
+        assert_eq!(vec.reflected(), vec_result);
     }
 
     #[test]
     fn test_reflected_empty() {
         let vec = Vec2D::<usize>::from_vec(0, 1, vec![]);
         let vec_result = Vec2D::<usize>::from_vec(0, 1, vec![]);
-        assert!(vec.reflected() == vec_result);
+        assert_eq!(vec.reflected(), vec_result);
         let vec = Vec2D::<usize>::from_vec(1, 0, vec![]);
         let vec_result = Vec2D::<usize>::from_vec(1, 0, vec![]);
-        assert!(vec.reflected() == vec_result);
+        assert_eq!(vec.reflected(), vec_result);
         let vec = Vec2D::<usize>::from_vec(0, 0, vec![]);
         let vec_result = Vec2D::<usize>::from_vec(0, 0, vec![]);
-        assert!(vec.reflected() == vec_result);
+        assert_eq!(vec.reflected(), vec_result);
     }
 
     #[test]
     fn test_rotated() {
         let vec = Vec2D::from_vec(2, 3, vec![0, 1, 2, 3, 4, 5]);
         let vec_result = Vec2D::from_vec(3, 2, vec![2, 5, 1, 4, 0, 3]);
-        assert!(vec.rotated() == vec_result);
+        assert_eq!(vec.rotated(), vec_result);
     }
 
     #[test]
     fn test_rotated_empty() {
         let vec = Vec2D::<usize>::from_vec(0, 1, vec![]);
         let vec_result = Vec2D::<usize>::from_vec(1, 0, vec![]);
-        assert!(vec.rotated() == vec_result);
+        assert_eq!(vec.rotated(), vec_result);
         let vec = Vec2D::<usize>::from_vec(1, 0, vec![]);
         let vec_result = Vec2D::<usize>::from_vec(0, 1, vec![]);
-        assert!(vec.rotated() == vec_result);
+        assert_eq!(vec.rotated(), vec_result);
         let vec = Vec2D::<usize>::from_vec(0, 0, vec![]);
         let vec_result = Vec2D::<usize>::from_vec(0, 0, vec![]);
-        assert!(vec.rotated() == vec_result);
+        assert_eq!(vec.rotated(), vec_result);
     }
 }
