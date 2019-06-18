@@ -3,7 +3,6 @@
 use crate::utils::vec2d::*;
 use std::collections::HashMap;
 use std::hash::Hash;
-use crate::Real;
 
 /// The available options used for overlappingWFC
 struct OverlappingWFCOptions {
@@ -22,9 +21,10 @@ struct OverlappingWFC<T> {
     options: OverlappingWFCOptions,
 }
 
-/// Get the list of patterns in the input, as well as their probability of appearance.
-fn get_patterns<T>(input: &Vec2D<T>, options: &OverlappingWFCOptions) -> Vec<(Vec2D<T>, Real)>
-where T: Clone + Hash + Eq,
+/// Get the list of patterns in the input, as well as the number of time they appear in the input.
+fn get_patterns<T>(input: &Vec2D<T>, options: &OverlappingWFCOptions) -> Vec<(Vec2D<T>, usize)>
+where
+    T: Clone + Hash + Eq,
 {
     let mut patterns = HashMap::new();
 
@@ -68,5 +68,148 @@ where T: Clone + Hash + Eq,
         }
     }
 
-    patterns.into_iter().map(|(pattern, occurence)| (pattern, occurence as Real)).collect()
+    patterns.into_iter().collect()
+}
+
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    #[test]
+    fn test_get_patterns() {
+        let options = OverlappingWFCOptions {
+            periodic_input: false,
+            periodic_output: false,
+            out_height: 10,
+            out_width: 10,
+            symmetry: 1,
+            ground: false,
+            pattern_size: 2,
+        };
+
+        // 0 1 2
+        // 3 4 5
+        // 6 7 8
+        let input = vec![0, 1, 2, 3, 4, 5, 6, 7, 8];
+        let input = Vec2D::from_vec(3, 3, input);
+
+        let patterns = get_patterns(&input, &options);
+        assert!(patterns
+            .iter()
+            .find(|(pattern, weight)| pattern.clone().to_vec() == vec![0, 1, 3, 4] && *weight == 1)
+            .is_some());
+        assert!(patterns
+            .iter()
+            .find(|(pattern, weight)| pattern.clone().to_vec() == vec![1, 2, 4, 5] && *weight == 1)
+            .is_some());
+        assert!(patterns
+            .iter()
+            .find(|(pattern, weight)| pattern.clone().to_vec() == vec![3, 4, 6, 7] && *weight == 1)
+            .is_some());
+        assert!(patterns
+            .iter()
+            .find(|(pattern, weight)| pattern.clone().to_vec() == vec![4, 5, 7, 8] && *weight == 1)
+            .is_some());
+
+        assert_eq!(patterns.len(), 4);
+    }
+
+    #[test]
+    fn test_get_patterns_overlapping() {
+        let options = OverlappingWFCOptions {
+            periodic_input: true,
+            periodic_output: false,
+            out_height: 10,
+            out_width: 10,
+            symmetry: 1,
+            ground: false,
+            pattern_size: 2,
+        };
+
+        // 0 1
+        // 2 3
+        let input = vec![0, 1, 2, 3];
+        let input = Vec2D::from_vec(2, 2, input);
+
+        let patterns = get_patterns(&input, &options);
+        assert!(patterns
+            .iter()
+            .find(|(pattern, weight)| pattern.clone().to_vec() == vec![0, 1, 2, 3] && *weight == 1)
+            .is_some());
+        assert!(patterns
+            .iter()
+            .find(|(pattern, weight)| pattern.clone().to_vec() == vec![1, 0, 3, 2] && *weight == 1)
+            .is_some());
+        assert!(patterns
+            .iter()
+            .find(|(pattern, weight)| pattern.clone().to_vec() == vec![2, 3, 0, 1] && *weight == 1)
+            .is_some());
+        assert!(patterns
+            .iter()
+            .find(|(pattern, weight)| pattern.clone().to_vec() == vec![3, 2, 1, 0] && *weight == 1)
+            .is_some());
+
+        assert_eq!(patterns.len(), 4);
+    }
+
+    #[test]
+    fn test_get_patterns_symmetry_2() {
+        let options = OverlappingWFCOptions {
+            periodic_input: false,
+            periodic_output: false,
+            out_height: 10,
+            out_width: 10,
+            symmetry: 2,
+            ground: false,
+            pattern_size: 2,
+        };
+
+        // 0 1
+        // 2 3
+        let input = vec![0, 1, 2, 3];
+        let input = Vec2D::from_vec(2, 2, input);
+
+        let patterns = get_patterns(&input, &options);
+        assert!(patterns
+            .iter()
+            .find(|(pattern, weight)| pattern.clone().to_vec() == vec![0, 1, 2, 3] && *weight == 1)
+            .is_some());
+        assert!(patterns
+            .iter()
+            .find(|(pattern, weight)| pattern.clone().to_vec() == vec![1, 0, 3, 2] && *weight == 1)
+            .is_some());
+
+        assert_eq!(patterns.len(), 2);
+    }
+
+    #[test]
+    fn test_get_patterns_multiple() {
+        let options = OverlappingWFCOptions {
+            periodic_input: false,
+            periodic_output: false,
+            out_height: 10,
+            out_width: 10,
+            symmetry: 1,
+            ground: false,
+            pattern_size: 2,
+        };
+
+        // 0 1 0
+        // 1 0 1
+        // 0 1 0
+        let input = vec![0, 1, 0, 1, 0, 1, 0, 1, 0];
+        let input = Vec2D::from_vec(3, 3, input);
+
+        let patterns = get_patterns(&input, &options);
+        assert!(patterns
+                .iter()
+                .find(|(pattern, weight)| pattern.clone().to_vec() == vec![0, 1, 1, 0] && *weight == 2)
+                .is_some());
+        assert!(patterns
+                .iter()
+                .find(|(pattern, weight)| pattern.clone().to_vec() == vec![1, 0, 0, 1] && *weight == 2)
+                .is_some());
+
+        assert_eq!(patterns.len(), 2);
+    }
 }
