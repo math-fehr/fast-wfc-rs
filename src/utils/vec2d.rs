@@ -35,7 +35,7 @@ impl<T> Vec2D<T> {
 
     /// Create a Vec2D given a vector representing its data, and the Vec2D size.
     /// The vector should be of the size height*width.
-    pub fn from_vec(height: usize, width: usize, data: Vec<T>) -> Vec2D<T> {
+    pub fn from_vec(data: Vec<T>, height: usize, width: usize) -> Vec2D<T> {
         assert_eq!(height * width, data.len());
         Vec2D {
             height,
@@ -89,7 +89,7 @@ impl<T> Vec2D<T> {
             .flatten()
             .map(T::clone)
             .collect();
-        Vec2D::from_vec(self.height, self.width, data)
+        Vec2D::from_vec(data, self.height, self.width)
     }
 
     /// Get the 90° anticlockwise rotation.
@@ -98,7 +98,7 @@ impl<T> Vec2D<T> {
         T: Clone,
     {
         if self.data.len() == 0 {
-            return Vec2D::from_vec(self.width, self.height, vec![]);
+            return Vec2D::from_vec(vec![], self.width, self.height);
         }
 
         let mut new_vec = Vec2D::new(self.width, self.height, &self.data[0]);
@@ -119,7 +119,7 @@ impl<T> Vec2D<T> {
         T: Clone,
     {
         if self.data.len() == 0 {
-            return Vec2D::from_vec(self.height, self.width, vec![]);
+            return Vec2D::from_vec(vec![], self.height, self.width);
         }
 
         let mut sub_vec = Vec2D::new(sub_height, sub_width, &self.data[0]);
@@ -142,67 +142,67 @@ mod tests {
 
     #[test]
     fn test_get_mut() {
-        let mut vec = Vec2D::from_vec(2, 3, vec![0, 1, 2, 3, 4, 5]);
+        let mut vec = Vec2D::from_vec(vec![0, 1, 2, 3, 4, 5], 2, 3);
         assert_eq!(*vec.get_mut(1, 2), 5);
     }
 
     #[test]
     #[should_panic]
     fn test_get_mut_panic() {
-        let mut vec = Vec2D::from_vec(2, 3, vec![0, 1, 2, 3, 4, 5]);
+        let mut vec = Vec2D::from_vec(vec![0, 1, 2, 3, 4, 5], 2, 3);
         vec.get_mut(2, 2);
     }
 
     #[test]
     fn test_get() {
-        let vec = Vec2D::from_vec(2, 3, vec![0, 1, 2, 3, 4, 5]);
+        let vec = Vec2D::from_vec(vec![0, 1, 2, 3, 4, 5], 2, 3);
         assert_eq!(*vec.get(1, 2), 5);
     }
 
     #[test]
     #[should_panic]
     fn test_get_panic() {
-        let vec = Vec2D::from_vec(2, 3, vec![0, 1, 2, 3, 4, 5]);
+        let vec = Vec2D::from_vec(vec![0, 1, 2, 3, 4, 5], 2, 3);
         vec.get(2, 2);
     }
 
     #[test]
     fn test_reflected() {
-        let vec = Vec2D::from_vec(2, 3, vec![0, 1, 2, 3, 4, 5]);
-        let vec_result = Vec2D::from_vec(2, 3, vec![2, 1, 0, 5, 4, 3]);
+        let vec = Vec2D::from_vec(vec![0, 1, 2, 3, 4, 5], 2, 3);
+        let vec_result = Vec2D::from_vec(vec![2, 1, 0, 5, 4, 3], 2, 3);
         assert_eq!(vec.reflected(), vec_result);
     }
 
     #[test]
     fn test_reflected_empty() {
-        let vec = Vec2D::<usize>::from_vec(0, 1, vec![]);
-        let vec_result = Vec2D::<usize>::from_vec(0, 1, vec![]);
+        let vec = Vec2D::<usize>::from_vec(vec![], 0, 1);
+        let vec_result = Vec2D::<usize>::from_vec(vec![], 0, 1);
         assert_eq!(vec.reflected(), vec_result);
-        let vec = Vec2D::<usize>::from_vec(1, 0, vec![]);
-        let vec_result = Vec2D::<usize>::from_vec(1, 0, vec![]);
+        let vec = Vec2D::<usize>::from_vec(vec![], 1, 0);
+        let vec_result = Vec2D::<usize>::from_vec(vec![], 1, 0);
         assert_eq!(vec.reflected(), vec_result);
-        let vec = Vec2D::<usize>::from_vec(0, 0, vec![]);
-        let vec_result = Vec2D::<usize>::from_vec(0, 0, vec![]);
+        let vec = Vec2D::<usize>::from_vec(vec![], 0, 0);
+        let vec_result = Vec2D::<usize>::from_vec(vec![], 0, 0);
         assert_eq!(vec.reflected(), vec_result);
     }
 
     #[test]
     fn test_rotated() {
-        let vec = Vec2D::from_vec(2, 3, vec![0, 1, 2, 3, 4, 5]);
-        let vec_result = Vec2D::from_vec(3, 2, vec![2, 5, 1, 4, 0, 3]);
+        let vec = Vec2D::from_vec(vec![0, 1, 2, 3, 4, 5], 2, 3);
+        let vec_result = Vec2D::from_vec(vec![2, 5, 1, 4, 0, 3], 3, 2);
         assert_eq!(vec.rotated(), vec_result);
     }
 
     #[test]
     fn test_rotated_empty() {
-        let vec = Vec2D::<usize>::from_vec(0, 1, vec![]);
-        let vec_result = Vec2D::<usize>::from_vec(1, 0, vec![]);
+        let vec = Vec2D::<usize>::from_vec(vec![], 0, 1);
+        let vec_result = Vec2D::<usize>::from_vec(vec![], 1, 0);
         assert_eq!(vec.rotated(), vec_result);
-        let vec = Vec2D::<usize>::from_vec(1, 0, vec![]);
-        let vec_result = Vec2D::<usize>::from_vec(0, 1, vec![]);
+        let vec = Vec2D::<usize>::from_vec(vec![], 1, 0);
+        let vec_result = Vec2D::<usize>::from_vec(vec![], 0, 1);
         assert_eq!(vec.rotated(), vec_result);
-        let vec = Vec2D::<usize>::from_vec(0, 0, vec![]);
-        let vec_result = Vec2D::<usize>::from_vec(0, 0, vec![]);
+        let vec = Vec2D::<usize>::from_vec(vec![], 0, 0);
+        let vec_result = Vec2D::<usize>::from_vec(vec![], 0, 0);
         assert_eq!(vec.rotated(), vec_result);
     }
 }

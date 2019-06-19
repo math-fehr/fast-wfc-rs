@@ -155,12 +155,12 @@ mod test {
 
     #[test]
     fn test_generate_oriented() {
-        let data = Vec2D::from_vec(1, 2, vec![1, 2]);
+        let data = Vec2D::from_vec(vec![1, 2], 1, 2);
         let oriented_data = generate_oriented(data, &Symmetry::T);
 
-        assert_eq!(oriented_data[0], Vec2D::from_vec(1, 2, vec![1, 2]));
-        assert_eq!(oriented_data[1], Vec2D::from_vec(2, 1, vec![2, 1]));
-        assert_eq!(oriented_data[2], Vec2D::from_vec(1, 2, vec![2, 1]));
-        assert_eq!(oriented_data[3], Vec2D::from_vec(2, 1, vec![1, 2]));
+        assert_eq!(oriented_data[0], Vec2D::from_vec(vec![1, 2], 1, 2));
+        assert_eq!(oriented_data[1], Vec2D::from_vec(vec![2, 1], 2, 1));
+        assert_eq!(oriented_data[2], Vec2D::from_vec(vec![2, 1], 1, 2));
+        assert_eq!(oriented_data[3], Vec2D::from_vec(vec![1, 2], 2, 1));
     }
 }
