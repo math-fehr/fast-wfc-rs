@@ -1,6 +1,7 @@
 //! Contain implementation of Vec2D, a 2D matrix represented by a Vec.
 
 use std::hash::{Hash, Hasher};
+use std::ops::{Index, IndexMut};
 
 /// A 2D matrix represented by a Vec.
 /// The Vec contains the values line after line.
@@ -59,20 +60,6 @@ impl<T> Vec2D<T> {
         self.width
     }
 
-    /// Get a reference on the value in position (y,x) in the Vec2D.
-    /// y should be less than height, and x less than width.
-    pub fn get(&self, y: usize, x: usize) -> &T {
-        assert!(y < self.height && x < self.width);
-        &self.data[x + y * self.width]
-    }
-
-    /// Get a mutable reference on the value in position (y,x) in the Vec2D.
-    /// y should be less than height, and x less than width.
-    pub fn get_mut(&mut self, y: usize, x: usize) -> &mut T {
-        assert!(y < self.height && x < self.width);
-        &mut self.data[x + y * self.width]
-    }
-
     /// Get the reflection along the x axis.
     pub fn reflected(&self) -> Vec2D<T>
     where
@@ -105,7 +92,7 @@ impl<T> Vec2D<T> {
 
         for y in 0..self.width {
             for x in 0..self.height {
-                *new_vec.get_mut(y, x) = self.get(x, self.width - 1 - y).clone();
+                new_vec[y][x] = self[x][self.width - 1 - y].clone();
             }
         }
 
@@ -126,13 +113,29 @@ impl<T> Vec2D<T> {
 
         for dy in 0..sub_height {
             for dx in 0..sub_width {
-                *sub_vec.get_mut(dy, dx) = self
-                    .get((y + dy) % self.height, (x + dx) % self.width)
-                    .clone();
+                sub_vec[dy][dx] = self[(y + dy) % self.height][(x + dx) % self.width].clone();
             }
         }
 
         sub_vec
+    }
+}
+
+impl<T> Index<usize> for Vec2D<T> {
+    type Output = [T];
+
+    fn index(&self, i: usize) -> &Self::Output {
+        let begin_index = i * self.width;
+        let end_index = (i + 1) * self.width;
+        &self.data[begin_index..end_index]
+    }
+}
+
+impl<T> IndexMut<usize> for Vec2D<T> {
+    fn index_mut(&mut self, i: usize) -> &mut Self::Output {
+        let begin_index = i * self.width;
+        let end_index = (i + 1) * self.width;
+        &mut self.data[begin_index..end_index]
     }
 }
 
@@ -143,27 +146,27 @@ mod tests {
     #[test]
     fn test_get_mut() {
         let mut vec = Vec2D::from_vec(vec![0, 1, 2, 3, 4, 5], 2, 3);
-        assert_eq!(*vec.get_mut(1, 2), 5);
+        assert_eq!(vec.index_mut(1)[2], 5);
     }
 
     #[test]
     #[should_panic]
     fn test_get_mut_panic() {
         let mut vec = Vec2D::from_vec(vec![0, 1, 2, 3, 4, 5], 2, 3);
-        vec.get_mut(2, 2);
+        vec.index_mut(2)[2];
     }
 
     #[test]
     fn test_get() {
         let vec = Vec2D::from_vec(vec![0, 1, 2, 3, 4, 5], 2, 3);
-        assert_eq!(*vec.get(1, 2), 5);
+        assert_eq!(vec.index(1)[2], 5);
     }
 
     #[test]
     #[should_panic]
     fn test_get_panic() {
         let vec = Vec2D::from_vec(vec![0, 1, 2, 3, 4, 5], 2, 3);
-        vec.get(2, 2);
+        vec.index(2)[2];
     }
 
     #[test]
