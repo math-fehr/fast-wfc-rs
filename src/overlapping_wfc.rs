@@ -22,7 +22,7 @@ struct OverlappingWFC<T> {
 }
 
 /// Get the list of patterns in the input, as well as the number of time they appear in the input.
-fn get_patterns<T>(
+pub fn get_patterns<T>(
     input: &Vec2D<T>,
     periodic: bool,
     pattern_size: usize,
