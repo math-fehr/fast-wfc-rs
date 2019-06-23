@@ -1,23 +1,14 @@
 //! Contain implementation of Vec2D, a 2D matrix represented by a Vec.
 
-use std::hash::{Hash, Hasher};
 use std::ops::{Index, IndexMut};
 
 /// A 2D matrix represented by a Vec.
 /// The Vec contains the values line after line.
-#[derive(Clone, PartialEq, Eq, Debug)]
+#[derive(Clone, PartialEq, Eq, Hash, Debug)]
 pub struct Vec2D<T> {
     height: usize,
     width: usize,
     data: Vec<T>,
-}
-
-impl<T: Hash> Hash for Vec2D<T> {
-    fn hash<H: Hasher>(&self, state: &mut H) {
-        self.height.hash(state);
-        self.width.hash(state);
-        self.data.hash(state);
-    }
 }
 
 impl<T> Vec2D<T> {
