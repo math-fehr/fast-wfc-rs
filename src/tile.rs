@@ -17,7 +17,7 @@ impl Symmetry {
     /// Get the possible number of orientations a kind of symmetry has.
     /// An orientation is a combination of rotation and reflection that
     /// lead to a different object.
-    pub fn nb_of_possible_orientations(&self) -> usize {
+    pub fn nb_of_possible_orientations(self) -> usize {
         match self {
             Symmetry::X => 1,
             Symmetry::I | Symmetry::Backslash => 2,
@@ -29,7 +29,7 @@ impl Symmetry {
 
 /// Generate the map associating an orientation to the orientation
 /// obtained when rotating 90° anticlockwise the orientation.
-fn generate_rotation_map(symmetry: &Symmetry) -> Vec<usize> {
+fn generate_rotation_map(symmetry: Symmetry) -> Vec<usize> {
     match symmetry {
         Symmetry::X => vec![0],
         Symmetry::I | Symmetry::Backslash => vec![1, 0],
@@ -40,7 +40,7 @@ fn generate_rotation_map(symmetry: &Symmetry) -> Vec<usize> {
 
 /// Generate the map associating an orientation to the orientation obtained
 /// by reflecting the object along the x axis.
-fn generate_reflection_map(symmetry: &Symmetry) -> Vec<usize> {
+fn generate_reflection_map(symmetry: Symmetry) -> Vec<usize> {
     match symmetry {
         Symmetry::X => vec![0],
         Symmetry::I => vec![0, 1],
@@ -55,7 +55,7 @@ fn generate_reflection_map(symmetry: &Symmetry) -> Vec<usize> {
 /// An action is a sequence of rotations and reflections.
 /// Actions 0 to 3 are 0°, 90°, 180°, and 270° anticlockwise rotations.
 /// Actions 4 to 7 are actions 0 to 3 preceded by a reflection on the x axis.
-fn generate_action_map(symmetry: &Symmetry) -> Vec<Vec<usize>> {
+fn generate_action_map(symmetry: Symmetry) -> Vec<Vec<usize>> {
     let rotation_map = generate_rotation_map(symmetry);
     let reflection_map = generate_reflection_map(symmetry);
     let size = rotation_map.len();
@@ -85,7 +85,7 @@ fn generate_action_map(symmetry: &Symmetry) -> Vec<Vec<usize>> {
 }
 
 /// Generate all distincts orientations of a 2D array given its symmetry type.
-pub fn generate_oriented<T>(data: Vec2D<T>, symmetry: &Symmetry) -> Vec<Vec2D<T>>
+pub fn generate_oriented<T>(data: Vec2D<T>, symmetry: Symmetry) -> Vec<Vec2D<T>>
 where
     T: Clone,
 {
@@ -130,7 +130,7 @@ pub struct Tile<T> {
 impl<T> Tile<T> {
     /// Create a new tile given a Vec2D representing an object.
     pub fn new(data: Vec2D<T>, symmetry: Symmetry) -> Tile<T> where T: Clone {
-        let oriented_data = generate_oriented(data, &symmetry);
+        let oriented_data = generate_oriented(data, symmetry);
         Tile {
             data: oriented_data,
             symmetry,
@@ -156,7 +156,7 @@ mod test {
     #[test]
     fn test_generate_oriented() {
         let data = Vec2D::from_vec(vec![1, 2], 1, 2);
-        let oriented_data = generate_oriented(data, &Symmetry::T);
+        let oriented_data = generate_oriented(data, Symmetry::T);
 
         assert_eq!(oriented_data[0], Vec2D::from_vec(vec![1, 2], 1, 2));
         assert_eq!(oriented_data[1], Vec2D::from_vec(vec![2, 1], 2, 1));
