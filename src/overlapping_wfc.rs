@@ -91,19 +91,19 @@ mod test {
         let patterns = get_patterns(&input, false, 2, 1);
         assert!(patterns
             .iter()
-            .find(|(pattern, weight)| pattern.clone().to_vec() == vec![0, 1, 3, 4] && *weight == 1)
+            .find(|(pattern, weight)| pattern.clone().as_vec() == vec![0, 1, 3, 4] && *weight == 1)
             .is_some());
         assert!(patterns
             .iter()
-            .find(|(pattern, weight)| pattern.clone().to_vec() == vec![1, 2, 4, 5] && *weight == 1)
+            .find(|(pattern, weight)| pattern.clone().as_vec() == vec![1, 2, 4, 5] && *weight == 1)
             .is_some());
         assert!(patterns
             .iter()
-            .find(|(pattern, weight)| pattern.clone().to_vec() == vec![3, 4, 6, 7] && *weight == 1)
+            .find(|(pattern, weight)| pattern.clone().as_vec() == vec![3, 4, 6, 7] && *weight == 1)
             .is_some());
         assert!(patterns
             .iter()
-            .find(|(pattern, weight)| pattern.clone().to_vec() == vec![4, 5, 7, 8] && *weight == 1)
+            .find(|(pattern, weight)| pattern.clone().as_vec() == vec![4, 5, 7, 8] && *weight == 1)
             .is_some());
 
         assert_eq!(patterns.len(), 4);
@@ -119,19 +119,19 @@ mod test {
         let patterns = get_patterns(&input, true, 2, 1);
         assert!(patterns
             .iter()
-            .find(|(pattern, weight)| pattern.clone().to_vec() == vec![0, 1, 2, 3] && *weight == 1)
+            .find(|(pattern, weight)| pattern.clone().as_vec() == vec![0, 1, 2, 3] && *weight == 1)
             .is_some());
         assert!(patterns
             .iter()
-            .find(|(pattern, weight)| pattern.clone().to_vec() == vec![1, 0, 3, 2] && *weight == 1)
+            .find(|(pattern, weight)| pattern.clone().as_vec() == vec![1, 0, 3, 2] && *weight == 1)
             .is_some());
         assert!(patterns
             .iter()
-            .find(|(pattern, weight)| pattern.clone().to_vec() == vec![2, 3, 0, 1] && *weight == 1)
+            .find(|(pattern, weight)| pattern.clone().as_vec() == vec![2, 3, 0, 1] && *weight == 1)
             .is_some());
         assert!(patterns
             .iter()
-            .find(|(pattern, weight)| pattern.clone().to_vec() == vec![3, 2, 1, 0] && *weight == 1)
+            .find(|(pattern, weight)| pattern.clone().as_vec() == vec![3, 2, 1, 0] && *weight == 1)
             .is_some());
 
         assert_eq!(patterns.len(), 4);
@@ -147,11 +147,11 @@ mod test {
         let patterns = get_patterns(&input, false, 2, 2);
         assert!(patterns
             .iter()
-            .find(|(pattern, weight)| pattern.clone().to_vec() == vec![0, 1, 2, 3] && *weight == 1)
+            .find(|(pattern, weight)| pattern.clone().as_vec() == vec![0, 1, 2, 3] && *weight == 1)
             .is_some());
         assert!(patterns
             .iter()
-            .find(|(pattern, weight)| pattern.clone().to_vec() == vec![1, 0, 3, 2] && *weight == 1)
+            .find(|(pattern, weight)| pattern.clone().as_vec() == vec![1, 0, 3, 2] && *weight == 1)
             .is_some());
 
         assert_eq!(patterns.len(), 2);
@@ -168,11 +168,11 @@ mod test {
         let patterns = get_patterns(&input, false, 2, 1);
         assert!(patterns
             .iter()
-            .find(|(pattern, weight)| pattern.clone().to_vec() == vec![0, 1, 1, 0] && *weight == 2)
+            .find(|(pattern, weight)| pattern.clone().as_vec() == vec![0, 1, 1, 0] && *weight == 2)
             .is_some());
         assert!(patterns
             .iter()
-            .find(|(pattern, weight)| pattern.clone().to_vec() == vec![1, 0, 0, 1] && *weight == 2)
+            .find(|(pattern, weight)| pattern.clone().as_vec() == vec![1, 0, 0, 1] && *weight == 2)
             .is_some());
 
         assert_eq!(patterns.len(), 2);

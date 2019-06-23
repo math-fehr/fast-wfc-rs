@@ -37,7 +37,7 @@ impl<T> Vec2D<T> {
     }
 
     /// Get the Vec2D data as a Vec.
-    pub fn to_vec(self) -> Vec<T> {
+    pub fn as_vec(self) -> Vec<T> {
         self.data
     }
 
