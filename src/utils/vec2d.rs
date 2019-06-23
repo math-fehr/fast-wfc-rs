@@ -75,7 +75,7 @@ impl<T> Vec2D<T> {
     where
         T: Clone,
     {
-        if self.data.len() == 0 {
+        if self.data.is_empty() {
             return Vec2D::from_vec(vec![], self.width, self.height);
         }
 
@@ -96,7 +96,7 @@ impl<T> Vec2D<T> {
     where
         T: Clone,
     {
-        if self.data.len() == 0 {
+        if self.data.is_empty() {
             return Vec2D::from_vec(vec![], self.height, self.width);
         }
 
