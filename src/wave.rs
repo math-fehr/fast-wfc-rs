@@ -47,4 +47,9 @@ impl Wave {
             .map(|(b, plogp)| if *b { *plogp } else { 0 as Real })
             .sum()
     }
+
+    /// Get a reference to the actual wave data.
+    pub fn data(&self) -> &Vec2D<Vec<bool>> {
+        &self.data
+    }
 }
