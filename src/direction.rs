@@ -4,7 +4,7 @@ use Direction::{Down, Left, Right, Up};
 
 /// The enum representing a direction parallel to the axes in a 2D space
 #[derive(Debug, PartialEq, Eq, Clone, Copy)]
-enum Direction {
+pub enum Direction {
     Down = 0,
     Left = 1,
     Right = 2,
