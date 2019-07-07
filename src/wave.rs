@@ -8,8 +8,8 @@ use std::ops::Index;
 /// Contains the list of valid patterns for each cell.
 /// Also, contains information about cell entropy.
 pub struct Wave {
-    /// The precomputation of frequency * log(frequency)
-    plogp_weights: Vec<Real>,
+    /// The weights of patterns
+    weights: Vec<Real>,
     /// The wave data. data[index][pattern] is equal to 0 if the pattern can be placed in the cell index
     data: Vec2D<Vec<bool>>,
 }
@@ -18,13 +18,12 @@ impl Wave {
     /// Create a new wave where every pattern can be in every cell.
     pub fn new(height: usize, width: usize, weights: &[Real]) -> Self {
         let n_patterns = weights.len();
-        let plogp_weights = weights.iter().map(|s| s * s.ln()).collect();
 
         let data_cell = vec![true; n_patterns];
         let data = Vec2D::new(height, width, &data_cell);
 
         Wave {
-            plogp_weights,
+            weights: weights.iter().copied().collect(),
             data,
         }
     }
@@ -42,10 +41,22 @@ impl Wave {
 
     /// Get the entropy of cell (i, j).
     pub fn get_entropy(&self, i: usize, j: usize) -> Real {
-        self.data[i][j]
+        let weights: Vec<_> = self.data[i][j]
             .iter()
-            .zip(self.plogp_weights.iter())
-            .map(|(b, plogp)| if *b { *plogp } else { 0 as Real })
+            .zip(self.weights.iter())
+            .filter(|(b, _)| **b)
+            .map(|(_, x)| *x)
+            .collect();
+
+        let sum_weight: Real = weights.iter().sum();
+        if sum_weight == 0.0 {
+            return 0 as Real;
+        }
+        let sum_weight_inv = 1.0 / sum_weight;
+
+        weights.iter()
+            .map(|x| x * sum_weight_inv)
+            .map(|x| -x * x.ln())
             .sum()
     }
 
