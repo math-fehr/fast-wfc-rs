@@ -16,9 +16,9 @@ pub struct Wave {
 
 impl Wave {
     /// Create a new wave where every pattern can be in every cell.
-    pub fn new(height: usize, width: usize, weights: Vec<Real>) -> Self {
+    pub fn new(height: usize, width: usize, weights: &[Real]) -> Self {
         let n_patterns = weights.len();
-        let plogp_weights = weights.clone().into_iter().map(|s| s * s.ln()).collect();
+        let plogp_weights = weights.iter().map(|s| s * s.ln()).collect();
 
         let data_cell = vec![true; n_patterns];
         let data = Vec2D::new(height, width, &data_cell);

@@ -30,7 +30,7 @@ impl Propagator {
     pub fn new(
         height: usize,
         width: usize,
-        weights: Vec<Real>,
+        weights: &[Real],
         patterns_compatibility: Vec<[Vec<usize>; 4]>,
         is_toric: bool,
     ) -> Propagator {
