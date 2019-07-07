@@ -3,6 +3,7 @@
 
 use crate::utils::vec2d::Vec2D;
 use crate::Real;
+use std::ops::Index;
 
 /// Contains the list of valid patterns for each cell.
 /// Also, contains information about cell entropy.
@@ -51,5 +52,13 @@ impl Wave {
     /// Get a reference to the actual wave data.
     pub fn data(&self) -> &Vec2D<Vec<bool>> {
         &self.data
+    }
+}
+
+impl Index<usize> for Wave {
+    type Output = [Vec<bool>];
+
+    fn index(&self, i: usize) -> &Self::Output {
+        &self.data[i]
     }
 }
