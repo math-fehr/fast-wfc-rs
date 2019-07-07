@@ -48,7 +48,7 @@ impl Propagator {
                                     array[*direction as u8 as usize] = patterns_compatibility
                                         [pattern]
                                         [direction.opposite() as u8 as usize]
-                                        .len()
+                                        .len() as isize
                                 }
                                 array
                             })
