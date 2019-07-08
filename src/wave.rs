@@ -16,6 +16,15 @@ pub struct Wave {
     n_patterns: Vec2D<usize>,
 }
 
+
+/// Error for some operations dealing with the wave.
+/// Impossible mean that there is a contradiction in the wave, and no solution exists.
+/// Finished mean that every cell is determined
+pub enum WaveError {
+    Impossible,
+    Finished
+}
+
 impl Wave {
     /// Create a new wave where every pattern can be in every cell.
     pub fn new(height: usize, width: usize, weights: &[Real]) -> Self {
@@ -66,7 +75,7 @@ impl Wave {
             .sum()
     }
 
-    pub fn get_min_entropy(&self) -> Option<(usize, usize)> {
+    pub fn get_min_entropy(&self) -> Result<(usize, usize), WaveError> {
         let mut min = std::f64::INFINITY as Real;
         let mut argmin = (-1, -1);
 
@@ -77,7 +86,7 @@ impl Wave {
                     continue;
                 }
                 if n_patterns == 0 {
-                    return None;
+                    return Err(WaveError::Impossible);
                 }
 
                 let entropy = self.get_entropy(i, j);
@@ -89,9 +98,9 @@ impl Wave {
         }
 
         if argmin == (-1, -1) {
-            None
+            Err(WaveError::Finished)
         } else {
-            Some((argmin.0 as usize, argmin.1 as usize))
+            Ok((argmin.0 as usize, argmin.1 as usize))
         }
     }
 
