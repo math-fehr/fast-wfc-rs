@@ -67,6 +67,11 @@ impl Propagator {
         }
     }
 
+    /// Return a reference to the owned wave
+    pub fn wave(&self) -> &Wave {
+        &self.wave
+    }
+
     /// Remove pattern from the wave on cell (i, j).
     /// This means that pattern cannot be placed in cell (i, j).
     pub fn unset(&mut self, y: usize, x: usize, pattern: usize) {
