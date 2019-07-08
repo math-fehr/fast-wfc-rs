@@ -2,6 +2,8 @@ use crate::propagator::*;
 use crate::Real;
 use rand_xorshift::XorShiftRng;
 use rand::SeedableRng;
+use crate::wave::WaveError;
+use rand::distributions::*;
 
 pub struct WFC {
     /// The random number generator
@@ -33,5 +35,25 @@ impl WFC {
             patterns_weights,
             propagator,
         }
+    }
+
+    /// Do a step of the WFC algorithm.
+    /// This mean that we take the cell that has the lowest positive entropy,
+    /// choose a pattern relative to the distribution, and propagate the information
+    pub fn step(&mut self) -> Result<(), WaveError> {
+        let (y, x) = self.propagator.wave().get_min_entropy()?;
+        let weights = self.propagator.wave()[y][x].iter().zip(self.patterns_weights.iter()).map(|(b, w)| if *b {*w} else {0.0});
+        let wc = WeightedIndex::new(weights).unwrap();
+
+        // Choose a pattern fllowing the weight distribution
+        let chosen_pattern = wc.sample(&mut self.rng_gen);
+
+        for k in 0..self.patterns_weights.len() {
+            if k != chosen_pattern {
+                self.propagator.unset(y, x, k);
+            }
+        }
+
+        Ok(())
     }
 }
