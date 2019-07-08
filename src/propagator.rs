@@ -73,11 +73,11 @@ impl Propagator {
         self.wave.unset(y, x, pattern);
         self.compatible[y][x][pattern] = [0; 4];
         self.propagating_queue.push((y, x, pattern));
+        self.propagate();
     }
 
     /// Propagate the information collected by the unset functions.
-    pub fn propagate(&mut self) {
-
+    fn propagate(&mut self) {
         // We propagate as long as we have things to propagate.
         // (y1, x1) is the cell where pattern was set to false in the wave.
         while let Some((y1, x1, pattern)) = self.propagating_queue.pop() {
