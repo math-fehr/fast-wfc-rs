@@ -108,6 +108,16 @@ impl Wave {
     pub fn data(&self) -> &Vec2D<Vec<bool>> {
         &self.data
     }
+
+    /// Get the wave height
+    pub fn height(&self) -> usize {
+        self.data.height()
+    }
+
+    /// Get the wave width
+    pub fn width(&self) -> usize {
+        self.data.width()
+    }
 }
 
 impl Index<usize> for Wave {
