@@ -1,9 +1,10 @@
 use crate::propagator::*;
-use crate::Real;
-use rand_xorshift::XorShiftRng;
-use rand::SeedableRng;
+use crate::utils::vec2d::*;
 use crate::wave::WaveError;
+use crate::Real;
 use rand::distributions::*;
+use rand::SeedableRng;
+use rand_xorshift::XorShiftRng;
 
 pub struct WFC {
     /// The random number generator
@@ -56,7 +57,10 @@ impl WFC {
     /// choose a pattern relative to the distribution, and propagate the information
     pub fn step(&mut self) -> Result<(), WaveError> {
         let (y, x) = self.propagator.wave().get_min_entropy()?;
-        let weights = self.propagator.wave()[y][x].iter().zip(self.patterns_weights.iter()).map(|(b, w)| if *b {*w} else {0.0});
+        let weights = self.propagator.wave()[y][x]
+            .iter()
+            .zip(self.patterns_weights.iter())
+            .map(|(b, w)| if *b { *w } else { 0.0 });
         let wc = WeightedIndex::new(weights).unwrap();
 
         // Choose a pattern fllowing the weight distribution
