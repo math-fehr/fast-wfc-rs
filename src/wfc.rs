@@ -37,6 +37,20 @@ impl WFC {
         }
     }
 
+    /// Do steps of the wfc algorithm until completion
+    /// Return true if the algorithm finished successfully,
+    /// or false if the algorithm failed.
+    pub fn run(&mut self) -> bool {
+        loop {
+            let step_status = self.step();
+            match step_status {
+                Ok(()) => (),
+                Err(WaveError::Finished) => return true,
+                Err(WaveError::Impossible) => return false,
+            }
+        }
+    }
+
     /// Do a step of the WFC algorithm.
     /// This mean that we take the cell that has the lowest positive entropy,
     /// choose a pattern relative to the distribution, and propagate the information
