@@ -1,5 +1,6 @@
 //! A direction parallel to the axes in a 2D space
 
+use std::ops::{Index, IndexMut};
 use Direction::{Down, Left, Right, Up};
 
 /// The enum representing a direction parallel to the axes in a 2D space
@@ -33,6 +34,57 @@ impl Direction {
     }
 }
 
+/// An array that is indexed by a direction
+#[derive(Debug, PartialEq, Eq, Clone, Copy)]
+pub struct DirArray<T> {
+    data: [T; 4],
+}
+
+impl<T> DirArray<T> {
+    /// Create a new array given a default value that will be assigned to
+    /// each direction.
+    pub fn new(default: &T) -> DirArray<T>
+    where
+        T: Clone,
+    {
+        DirArray {
+            data: [
+                default.clone(),
+                default.clone(),
+                default.clone(),
+                default.clone(),
+            ],
+        }
+    }
+
+    /// Create a new array where the values assigned to each direction
+    /// is given by the given generator
+    pub fn new_generator<F: Fn(Direction) -> T>(generator: F) -> DirArray<T> {
+        DirArray {
+            data: [
+                generator(Down),
+                generator(Left),
+                generator(Right),
+                generator(Up),
+            ],
+        }
+    }
+}
+
+impl<T> Index<Direction> for DirArray<T> {
+    type Output = T;
+
+    fn index(&self, dir: Direction) -> &Self::Output {
+        &self.data[dir as u8 as usize]
+    }
+}
+
+impl<T> IndexMut<Direction> for DirArray<T> {
+    fn index_mut(&mut self, dir: Direction) -> &mut Self::Output {
+        &mut self.data[dir as u8 as usize]
+    }
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -43,5 +95,27 @@ mod test {
         assert_eq!(Up.opposite(), Down);
         assert_eq!(Left.opposite(), Right);
         assert_eq!(Right.opposite(), Left);
+    }
+
+    #[test]
+    fn test_index() {
+        let mut array = DirArray::new(&3);
+        assert_eq!(array[Down], 3);
+        array[Up] = 2;
+        assert_eq!(array[Up], 2);
+    }
+
+    #[test]
+    fn test_generator() {
+        let array = DirArray::new_generator(|dir| match dir {
+            Up => 0,
+            Left => 1,
+            Down => 2,
+            Right => 3,
+        });
+        assert_eq!(array[Up], 0);
+        assert_eq!(array[Left], 1);
+        assert_eq!(array[Down], 2);
+        assert_eq!(array[Right], 3);
     }
 }
