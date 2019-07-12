@@ -74,4 +74,28 @@ impl WFC {
 
         Ok(())
     }
+
+    /// If every cell in the wave is decided, return the values decided in
+    /// each cell.
+    pub fn to_output(&self) -> Option<Vec2D<usize>> {
+        let wave = self.propagator.wave();
+        let height = wave.height();
+        let width = wave.width();
+
+        let mut data = Vec2D::new(height, width, &0);
+        for i in 0..height {
+            for j in 0..width {
+                let cell_values: Vec<_> = wave[i][j]
+                    .iter()
+                    .enumerate()
+                    .filter_map(|(v, b)| if *b { Some(v) } else { None })
+                    .collect();
+                if cell_values.len() != 1 {
+                    return None;
+                }
+                data[i][j] = cell_values[0];
+            }
+        }
+        Some(data)
+    }
 }
