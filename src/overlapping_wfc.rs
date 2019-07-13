@@ -1,7 +1,8 @@
 //! Contains the OverlappingWFC struct, which is used to apply the overlapping WFC on a 2D image
 
-use crate::utils::vec2d::*;
 use crate::direction::*;
+use crate::utils::vec2d::*;
+use crate::wfc::WFC;
 use std::collections::HashMap;
 use std::hash::Hash;
 
@@ -20,21 +21,65 @@ struct OverlappingWFCOptions {
 struct OverlappingWFC<T> {
     input: Vec2D<T>,
     options: OverlappingWFCOptions,
+    wfc: WFC,
+    patterns: Vec<Vec2D<T>>,
+}
+
+impl<T: Eq + Hash + Clone> OverlappingWFC<T> {
+    pub fn new(
+        input: Vec2D<T>,
+        options: OverlappingWFCOptions,
+        seed: [u8; 16],
+    ) -> OverlappingWFC<T> {
+        let patterns = get_patterns(
+            &input,
+            options.periodic_input,
+            options.pattern_size,
+            options.symmetry,
+        );
+
+        let (patterns, weights): (Vec<_>, _) =
+            patterns.into_iter().map(|(p, w)| (p, w as f32)).unzip();
+        let compatible = precompute_compatible(&patterns);
+
+        let wfc = WFC::new(
+            options.periodic_input,
+            seed,
+            weights,
+            compatible,
+            options.out_height,
+            options.out_width,
+        );
+
+        OverlappingWFC {
+            input,
+            options,
+            wfc,
+            patterns,
+        }
+    }
 }
 
 /// Precompute the is_compatible function for a set of patterns.
 fn precompute_compatible<T: PartialEq>(patterns: &[Vec2D<T>]) -> Vec<DirArray<Vec<usize>>> {
-    patterns.iter().map(|pattern1| {
-        DirArray::new_generator(|direction| {
-            patterns.iter().enumerate().filter_map(|(id, pattern2)| {
-                if is_compatible(pattern1, pattern2, direction) {
-                    Some(id)
-                } else {
-                    None
-                }
-            }).collect()
+    patterns
+        .iter()
+        .map(|pattern1| {
+            DirArray::new_generator(|direction| {
+                patterns
+                    .iter()
+                    .enumerate()
+                    .filter_map(|(id, pattern2)| {
+                        if is_compatible(pattern1, pattern2, direction) {
+                            Some(id)
+                        } else {
+                            None
+                        }
+                    })
+                    .collect()
+            })
         })
-    }).collect()
+        .collect()
 }
 
 /// Check if pattern1 is compatible with pattern2, when pattern2 is the neighbor
@@ -64,7 +109,7 @@ fn is_compatible<T: PartialEq>(pattern1: &Vec2D<T>, pattern2: &Vec2D<T>, dir: Di
         }
     }
 
-    return true;
+    true
 }
 
 /// Get the list of patterns in the input, as well as the number of time they appear in the input.

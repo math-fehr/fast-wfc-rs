@@ -22,8 +22,8 @@ impl WFC {
         seed: [u8; 16],
         patterns_weights: Vec<Real>,
         patterns_compatibility: Vec<DirArray<Vec<usize>>>,
-        width: usize,
         height: usize,
+        width: usize,
     ) -> Self {
         let propagator = Propagator::new(
             height,
