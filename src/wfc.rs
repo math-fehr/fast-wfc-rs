@@ -2,6 +2,7 @@ use crate::propagator::*;
 use crate::utils::vec2d::*;
 use crate::wave::WaveError;
 use crate::Real;
+use crate::direction::*;
 use rand::distributions::*;
 use rand::SeedableRng;
 use rand_xorshift::XorShiftRng;
@@ -20,7 +21,7 @@ impl WFC {
         is_toric: bool,
         seed: [u8; 16],
         patterns_weights: Vec<Real>,
-        patterns_compatibility: Vec<[Vec<usize>; 4]>,
+        patterns_compatibility: Vec<DirArray<Vec<usize>>>,
         width: usize,
         height: usize,
     ) -> Self {
