@@ -21,6 +21,33 @@ struct OverlappingWFC<T> {
     options: OverlappingWFCOptions,
 }
 
+fn agrees<T: PartialEq>(pattern1: &Vec2D<T>, pattern2: &Vec2D<T>, dy: isize, dx: isize) -> bool {
+    assert!(pattern1.width() == pattern2.width());
+    assert!(pattern1.height() == pattern2.height());
+    assert!(dy <= pattern1.height() as isize);
+    assert!(dx <= pattern1.width() as isize);
+    let (x_min, x_max) = if dx < 0 {
+        (0, (dx + pattern2.width() as isize) as usize)
+    } else {
+        (dx as usize, pattern1.width())
+    };
+    let (y_min, y_max) = if dy < 0 {
+        (0, (dy + pattern2.height() as isize) as usize)
+    } else {
+        (dy as usize, pattern1.width())
+    };
+
+    for y in y_min..y_max {
+        for x in x_min..x_max {
+            if pattern1[y][x] != pattern2[(y as isize - dy) as usize][(x as isize - dx) as usize] {
+                return false;
+            }
+        }
+    }
+
+    return true;
+}
+
 /// Get the list of patterns in the input, as well as the number of time they appear in the input.
 pub fn get_patterns<T>(
     input: &Vec2D<T>,
@@ -91,19 +118,27 @@ mod test {
         let patterns = get_patterns(&input, false, 2, 1);
         assert!(patterns
             .iter()
-            .find(|(pattern, weight)| pattern.clone().into_vec() == vec![0, 1, 3, 4] && *weight == 1)
+            .find(
+                |(pattern, weight)| pattern.clone().into_vec() == vec![0, 1, 3, 4] && *weight == 1
+            )
             .is_some());
         assert!(patterns
             .iter()
-            .find(|(pattern, weight)| pattern.clone().into_vec() == vec![1, 2, 4, 5] && *weight == 1)
+            .find(
+                |(pattern, weight)| pattern.clone().into_vec() == vec![1, 2, 4, 5] && *weight == 1
+            )
             .is_some());
         assert!(patterns
             .iter()
-            .find(|(pattern, weight)| pattern.clone().into_vec() == vec![3, 4, 6, 7] && *weight == 1)
+            .find(
+                |(pattern, weight)| pattern.clone().into_vec() == vec![3, 4, 6, 7] && *weight == 1
+            )
             .is_some());
         assert!(patterns
             .iter()
-            .find(|(pattern, weight)| pattern.clone().into_vec() == vec![4, 5, 7, 8] && *weight == 1)
+            .find(
+                |(pattern, weight)| pattern.clone().into_vec() == vec![4, 5, 7, 8] && *weight == 1
+            )
             .is_some());
 
         assert_eq!(patterns.len(), 4);
@@ -119,19 +154,27 @@ mod test {
         let patterns = get_patterns(&input, true, 2, 1);
         assert!(patterns
             .iter()
-            .find(|(pattern, weight)| pattern.clone().into_vec() == vec![0, 1, 2, 3] && *weight == 1)
+            .find(
+                |(pattern, weight)| pattern.clone().into_vec() == vec![0, 1, 2, 3] && *weight == 1
+            )
             .is_some());
         assert!(patterns
             .iter()
-            .find(|(pattern, weight)| pattern.clone().into_vec() == vec![1, 0, 3, 2] && *weight == 1)
+            .find(
+                |(pattern, weight)| pattern.clone().into_vec() == vec![1, 0, 3, 2] && *weight == 1
+            )
             .is_some());
         assert!(patterns
             .iter()
-            .find(|(pattern, weight)| pattern.clone().into_vec() == vec![2, 3, 0, 1] && *weight == 1)
+            .find(
+                |(pattern, weight)| pattern.clone().into_vec() == vec![2, 3, 0, 1] && *weight == 1
+            )
             .is_some());
         assert!(patterns
             .iter()
-            .find(|(pattern, weight)| pattern.clone().into_vec() == vec![3, 2, 1, 0] && *weight == 1)
+            .find(
+                |(pattern, weight)| pattern.clone().into_vec() == vec![3, 2, 1, 0] && *weight == 1
+            )
             .is_some());
 
         assert_eq!(patterns.len(), 4);
@@ -147,11 +190,15 @@ mod test {
         let patterns = get_patterns(&input, false, 2, 2);
         assert!(patterns
             .iter()
-            .find(|(pattern, weight)| pattern.clone().into_vec() == vec![0, 1, 2, 3] && *weight == 1)
+            .find(
+                |(pattern, weight)| pattern.clone().into_vec() == vec![0, 1, 2, 3] && *weight == 1
+            )
             .is_some());
         assert!(patterns
             .iter()
-            .find(|(pattern, weight)| pattern.clone().into_vec() == vec![1, 0, 3, 2] && *weight == 1)
+            .find(
+                |(pattern, weight)| pattern.clone().into_vec() == vec![1, 0, 3, 2] && *weight == 1
+            )
             .is_some());
 
         assert_eq!(patterns.len(), 2);
@@ -168,13 +215,52 @@ mod test {
         let patterns = get_patterns(&input, false, 2, 1);
         assert!(patterns
             .iter()
-            .find(|(pattern, weight)| pattern.clone().into_vec() == vec![0, 1, 1, 0] && *weight == 2)
+            .find(
+                |(pattern, weight)| pattern.clone().into_vec() == vec![0, 1, 1, 0] && *weight == 2
+            )
             .is_some());
         assert!(patterns
             .iter()
-            .find(|(pattern, weight)| pattern.clone().into_vec() == vec![1, 0, 0, 1] && *weight == 2)
+            .find(
+                |(pattern, weight)| pattern.clone().into_vec() == vec![1, 0, 0, 1] && *weight == 2
+            )
             .is_some());
 
         assert_eq!(patterns.len(), 2);
     }
+
+    #[test]
+    fn test_agrees_true() {
+        // 1 2 3
+        // 4 5 6
+        // 7 8 9
+        let pattern1 = vec![1, 2, 3, 4, 5, 6, 7, 8, 9];
+        let pattern1 = Vec2D::from_vec(pattern1, 3, 3);
+
+        // 0 0 0
+        // 2 3 0
+        // 5 6 0
+        let pattern2 = vec![0, 0, 0, 2, 3, 0, 5, 6, 0];
+        let pattern2 = Vec2D::from_vec(pattern2, 3, 3);
+
+        assert!(agrees(&pattern1, &pattern2, -1, 1))
+    }
+
+    #[test]
+    fn test_agrees_false() {
+        // 1 2 3
+        // 4 5 6
+        // 7 8 9
+        let pattern1 = vec![1, 2, 3, 4, 5, 6, 7, 8, 9];
+        let pattern1 = Vec2D::from_vec(pattern1, 3, 3);
+
+        // 0 0 0
+        // 2 0 0
+        // 5 6 0
+        let pattern2 = vec![0, 0, 0, 2, 0, 0, 5, 6, 0];
+        let pattern2 = Vec2D::from_vec(pattern2, 3, 3);
+
+        assert!(!agrees(&pattern1, &pattern2, -1, 1))
+    }
+
 }
