@@ -1,6 +1,7 @@
 //! Contains the OverlappingWFC struct, which is used to apply the overlapping WFC on a 2D image
 
 use crate::utils::vec2d::*;
+use crate::direction::*;
 use std::collections::HashMap;
 use std::hash::Hash;
 
@@ -21,11 +22,29 @@ struct OverlappingWFC<T> {
     options: OverlappingWFCOptions,
 }
 
-fn agrees<T: PartialEq>(pattern1: &Vec2D<T>, pattern2: &Vec2D<T>, dy: isize, dx: isize) -> bool {
+/// Precompute the is_compatible function for a set of patterns.
+fn precompute_compatible<T: PartialEq>(patterns: &[Vec2D<T>]) -> Vec<DirArray<Vec<usize>>> {
+    patterns.iter().map(|pattern1| {
+        DirArray::new_generator(|direction| {
+            patterns.iter().enumerate().filter_map(|(id, pattern2)| {
+                if is_compatible(pattern1, pattern2, direction) {
+                    Some(id)
+                } else {
+                    None
+                }
+            }).collect()
+        })
+    }).collect()
+}
+
+/// Check if pattern1 is compatible with pattern2, when pattern2 is the neighbor
+/// in direction dir of pattern1.
+fn is_compatible<T: PartialEq>(pattern1: &Vec2D<T>, pattern2: &Vec2D<T>, dir: Direction) -> bool {
     assert!(pattern1.width() == pattern2.width());
     assert!(pattern1.height() == pattern2.height());
-    assert!(dy <= pattern1.height() as isize);
-    assert!(dx <= pattern1.width() as isize);
+    assert!(pattern1.height() >= 1);
+    assert!(pattern1.width() >= 1);
+    let (dy, dx) = dir.get_coordinates();
     let (x_min, x_max) = if dx < 0 {
         (0, (dx + pattern2.width() as isize) as usize)
     } else {
@@ -230,37 +249,37 @@ mod test {
     }
 
     #[test]
-    fn test_agrees_true() {
+    fn test_is_compatible_true() {
         // 1 2 3
         // 4 5 6
         // 7 8 9
         let pattern1 = vec![1, 2, 3, 4, 5, 6, 7, 8, 9];
         let pattern1 = Vec2D::from_vec(pattern1, 3, 3);
 
-        // 0 0 0
         // 2 3 0
         // 5 6 0
-        let pattern2 = vec![0, 0, 0, 2, 3, 0, 5, 6, 0];
+        // 8 9 0
+        let pattern2 = vec![2, 3, 0, 5, 6, 0, 8, 9, 0];
         let pattern2 = Vec2D::from_vec(pattern2, 3, 3);
 
-        assert!(agrees(&pattern1, &pattern2, -1, 1))
+        assert!(is_compatible(&pattern1, &pattern2, Direction::Right))
     }
 
     #[test]
-    fn test_agrees_false() {
+    fn test_is_compatible_false() {
         // 1 2 3
         // 4 5 6
         // 7 8 9
         let pattern1 = vec![1, 2, 3, 4, 5, 6, 7, 8, 9];
         let pattern1 = Vec2D::from_vec(pattern1, 3, 3);
 
-        // 0 0 0
-        // 2 0 0
-        // 5 6 0
-        let pattern2 = vec![0, 0, 0, 2, 0, 0, 5, 6, 0];
+        // 2 3 0
+        // 5 0 0
+        // 8 9 0
+        let pattern2 = vec![2, 3, 0, 5, 0, 0, 8, 9, 0];
         let pattern2 = Vec2D::from_vec(pattern2, 3, 3);
 
-        assert!(!agrees(&pattern1, &pattern2, -1, 1))
+        assert!(!is_compatible(&pattern1, &pattern2, Direction::Right))
     }
 
 }
