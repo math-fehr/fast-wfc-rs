@@ -42,13 +42,13 @@ impl WFC {
     /// Do steps of the wfc algorithm until completion
     /// Return true if the algorithm finished successfully,
     /// or false if the algorithm failed.
-    pub fn run(&mut self) -> bool {
+    pub fn run(&mut self) -> Option<Vec2D<usize>> {
         loop {
             let step_status = self.step();
             match step_status {
                 Ok(()) => (),
-                Err(WaveError::Finished) => return true,
-                Err(WaveError::Impossible) => return false,
+                Err(WaveError::Impossible) => return None,
+                Err(WaveError::Finished) => return self.to_output(),
             }
         }
     }
@@ -78,7 +78,7 @@ impl WFC {
 
     /// If every cell in the wave is decided, return the values decided in
     /// each cell.
-    pub fn to_output(&self) -> Option<Vec2D<usize>> {
+    fn to_output(&self) -> Option<Vec2D<usize>> {
         let wave = self.propagator.wave();
         let height = wave.height();
         let width = wave.width();
