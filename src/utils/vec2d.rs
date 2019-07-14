@@ -36,11 +36,13 @@ impl<T> Vec2D<T> {
         }
     }
 
+    /// Create a Vec2D using a generator function that will be called in all cells.
     pub fn from_generator<F: Fn(usize, usize) -> T>(
         height: usize,
         width: usize,
-        generator: &F,
+        generator: F,
     ) -> Vec2D<T> {
+        let generator = &generator;
         let vec = (0..height)
             .map(|i| (0..width).map(move |j| generator(i, j)))
             .flatten()
