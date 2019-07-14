@@ -31,6 +31,8 @@ impl<T: Eq + Hash + Clone> OverlappingWFC<T> {
         options: OverlappingWFCOptions,
         seed: [u8; 16],
     ) -> OverlappingWFC<T> {
+        assert!(options.pattern_size <= options.out_height);
+        assert!(options.pattern_size <= options.out_width);
         let patterns = get_patterns(
             &input,
             options.periodic_input,
@@ -56,6 +58,32 @@ impl<T: Eq + Hash + Clone> OverlappingWFC<T> {
             options,
             wfc,
             patterns,
+        }
+    }
+
+    /// Return the result image, given the selected patterns for each cell.
+    fn to_image(&self, output_patterns: &Vec2D<usize>) -> Vec2D<T> {
+        let height = self.options.out_height;
+        let width = self.options.out_width;
+        let pattern_size = self.options.pattern_size;
+        if self.options.periodic_output {
+            Vec2D::from_generator(height, width, |i, j| {
+                self.patterns[output_patterns[i][j]][0][0].clone()
+            })
+        } else {
+            Vec2D::from_generator(height, width, |i, j| {
+                let (i, di) = if i < pattern_size {
+                    (0, i)
+                } else {
+                    (i-pattern_size+1, pattern_size-1)
+                };
+                let (j, dj) = if j < pattern_size {
+                    (0, j)
+                } else {
+                    (j-pattern_size+1, pattern_size-1)
+                };
+                self.patterns[output_patterns[i][j]][di][dj].clone()
+            })
         }
     }
 }
