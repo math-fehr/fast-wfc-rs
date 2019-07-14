@@ -36,6 +36,18 @@ impl<T> Vec2D<T> {
         }
     }
 
+    pub fn from_generator<F: Fn(usize, usize) -> T>(
+        height: usize,
+        width: usize,
+        generator: F,
+    ) -> Vec2D<T> {
+        let vec = (0..height)
+            .map(|i| (0..width).map(|j| generator(i, j)))
+            .flatten()
+            .collect();
+        Vec2D::from_vec(vec, height, width)
+    }
+
     /// Get the Vec2D data as a Vec.
     pub fn into_vec(self) -> Vec<T> {
         self.data
