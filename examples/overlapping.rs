@@ -48,11 +48,11 @@ fn main() {
         periodic_output: false,
         out_height: 42,
         out_width: 42,
-        symmetry: 1,
-        pattern_size: 2,
+        symmetry: 2,
+        pattern_size: 3,
     };
 
-    let mut wfc = OverlappingWFC::new(image, options, [4; 16]);
+    let mut wfc = OverlappingWFC::new(image, options, [1; 16]);
     let image = wfc.run().unwrap();
 
     let image = vec2d_to_image(&image);
