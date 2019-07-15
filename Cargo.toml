@@ -3,6 +3,9 @@ name = "fast-wfc"
 version = "0.1.0"
 authors = ["mfehr <mathieu.fehr@gmail.com>"]
 edition = "2018"
+exclude = [
+    "examples/*",
+]
 
 [dependencies]
 rand_xorshift = "0.2.*"
