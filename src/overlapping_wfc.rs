@@ -13,7 +13,6 @@ struct OverlappingWFCOptions {
     pub out_height: usize,
     pub out_width: usize,
     pub symmetry: usize,
-    pub ground: bool,
     pub pattern_size: usize,
 }
 
