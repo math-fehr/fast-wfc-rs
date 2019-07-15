@@ -61,6 +61,11 @@ impl<T: Eq + Hash + Clone> OverlappingWFC<T> {
         }
     }
 
+    /// Run the wfc algorithm with overlapping.
+    pub fn run(&mut self) -> Option<Vec2D<T>> {
+        self.wfc.run().map(|patterns| self.to_image(&patterns))
+    }
+
     /// Return the result image, given the selected patterns for each cell.
     fn to_image(&self, output_patterns: &Vec2D<usize>) -> Vec2D<T> {
         let height = self.options.out_height;
