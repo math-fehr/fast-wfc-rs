@@ -5,5 +5,8 @@ authors = ["mfehr <mathieu.fehr@gmail.com>"]
 edition = "2018"
 
 [dependencies]
-rand_xorshift = "0.2.0"
-rand = "0.7.0"
+rand_xorshift = "0.2.*"
+rand = "0.7.*"
+
+[dev-dependencies]
+image = "0.21.*"
