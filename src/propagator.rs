@@ -71,10 +71,12 @@ impl Propagator {
     /// Remove pattern from the wave on cell (i, j).
     /// This means that pattern cannot be placed in cell (i, j).
     pub fn unset(&mut self, y: usize, x: usize, pattern: usize) {
-        self.wave.unset(y, x, pattern);
-        self.compatible[y][x][pattern] = DirArray::new(&0);
-        self.propagating_queue.push((y, x, pattern));
-        self.propagate();
+        if self.wave[y][x][pattern] {
+            self.wave.unset(y, x, pattern);
+            self.compatible[y][x][pattern] = DirArray::new(&0);
+            self.propagating_queue.push((y, x, pattern));
+            self.propagate();
+        }
     }
 
     /// Propagate the information collected by the unset functions.
