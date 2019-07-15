@@ -7,7 +7,7 @@ use std::collections::HashMap;
 use std::hash::Hash;
 
 /// The available options used for overlappingWFC
-struct OverlappingWFCOptions {
+pub struct OverlappingWFCOptions {
     pub periodic_input: bool,
     pub periodic_output: bool,
     pub out_height: usize,
@@ -17,8 +17,7 @@ struct OverlappingWFCOptions {
 }
 
 /// Class used for the overlapping WFC
-struct OverlappingWFC<T> {
-    input: Vec2D<T>,
+pub struct OverlappingWFC<T> {
     options: OverlappingWFCOptions,
     wfc: WFC,
     patterns: Vec<Vec2D<T>>,
@@ -53,7 +52,6 @@ impl<T: Eq + Hash + Clone> OverlappingWFC<T> {
         );
 
         OverlappingWFC {
-            input,
             options,
             wfc,
             patterns,
