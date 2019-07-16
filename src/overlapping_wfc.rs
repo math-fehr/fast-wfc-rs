@@ -7,6 +7,7 @@ use std::collections::HashMap;
 use std::hash::Hash;
 
 /// The available options used for overlappingWFC
+#[derive(Clone, Copy, Debug)]
 pub struct OverlappingWFCOptions {
     pub periodic_input: bool,
     pub periodic_output: bool,
