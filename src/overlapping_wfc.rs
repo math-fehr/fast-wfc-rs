@@ -3,8 +3,8 @@
 use crate::direction::*;
 use crate::utils::vec2d::*;
 use crate::wfc::WFC;
-use std::collections::HashMap;
-use std::hash::Hash;
+use std::collections::hash_map::{DefaultHasher, HashMap};
+use std::hash::{BuildHasherDefault, Hash};
 
 /// The available options used for overlappingWFC
 #[derive(Clone, Copy, Debug)]
@@ -78,12 +78,12 @@ impl<T: Eq + Hash + Clone> OverlappingWFC<T> {
                 let (i, di) = if i < pattern_size {
                     (0, i)
                 } else {
-                    (i-pattern_size+1, pattern_size-1)
+                    (i - pattern_size + 1, pattern_size - 1)
                 };
                 let (j, dj) = if j < pattern_size {
                     (0, j)
                 } else {
-                    (j-pattern_size+1, pattern_size-1)
+                    (j - pattern_size + 1, pattern_size - 1)
                 };
                 self.patterns[output_patterns[i][j]][di][dj].clone()
             })
@@ -153,7 +153,7 @@ pub fn get_patterns<T>(
 where
     T: Clone + Hash + Eq,
 {
-    let mut patterns = HashMap::new();
+    let mut patterns: HashMap<_, _, BuildHasherDefault<DefaultHasher>> = HashMap::default();
 
     let max_i = if periodic {
         input.height()
