@@ -55,7 +55,7 @@ fn main() {
 }
 
 fn bench_overlapping(bencher: &mut Bencher, file: &str, options: OverlappingWFCOptions) {
-    let image = read_image("benches/images/Flowers.png");
+    let image = read_image(file);
     let image = image_to_vec2d(&image);
 
 
@@ -84,5 +84,5 @@ fn bench_flowers(bencher: &mut Bencher) {
         pattern_size: 3,
     };
 
-    bench_overlapping(bencher, "benches/images/Flowers.png", options);
+    bench_overlapping(bencher, "images/Flowers.png", options);
 }
