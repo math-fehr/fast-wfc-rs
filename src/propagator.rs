@@ -90,8 +90,10 @@ impl Propagator {
                 // The coordinate of a neighboring cell
                 let (y2, x2) = if self.is_toric {
                     (
-                        (y1 as isize + dy + self.wave.data().height() as isize) as usize,
-                        (x1 as isize + dx + self.wave.data().width() as isize) as usize,
+                        (y1 as isize + dy + self.wave.data().height() as isize) as usize
+                            % self.wave.data().height(),
+                        (x1 as isize + dx + self.wave.data().width() as isize) as usize
+                            % self.wave.data().width(),
                     )
                 } else {
                     let (y2, x2) = (y1 as isize + dy, x1 as isize + dx);

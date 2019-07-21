@@ -15,6 +15,7 @@ pub struct OverlappingWFCOptions {
     pub out_width: usize,
     pub symmetry: usize,
     pub pattern_size: usize,
+    pub ground: bool,
 }
 
 /// Class used for the overlapping WFC
@@ -44,7 +45,7 @@ impl<T: Eq + Hash + Clone> OverlappingWFC<T> {
         let compatible = precompute_compatible(&patterns);
 
         let wfc = WFC::new(
-            options.periodic_input,
+            options.periodic_output,
             seed,
             weights,
             compatible,
@@ -52,10 +53,42 @@ impl<T: Eq + Hash + Clone> OverlappingWFC<T> {
             options.out_width,
         );
 
-        OverlappingWFC {
+        let mut wfc = OverlappingWFC {
             options,
             wfc,
             patterns,
+        };
+        if options.ground {
+            wfc.init_ground(&input);
+        }
+        wfc
+    }
+
+    /// Initialize the ground, given the ground pattern
+    fn init_ground(&mut self, input: &Vec2D<T>) {
+        let ground = get_ground_pattern(input, &self.options);
+        let ground_id = self
+            .patterns
+            .iter()
+            .enumerate()
+            .find_map(|(i, x)| if *x == ground {Some(i)} else {None})
+            .unwrap();
+
+        let propagator = self.wfc.propagator();
+        let height = propagator.wave().height();
+        let width = propagator.wave().width();
+        for j in 0..width {
+            for p in 0..self.patterns.len() {
+                if p != ground_id {
+                    self.wfc.propagator().unset(height - 1, j, p);
+                }
+            }
+        }
+
+        for i in 0..height-1 {
+            for j in 0..width {
+                self.wfc.propagator().unset(i, j, ground_id);
+            }
         }
     }
 
@@ -196,6 +229,27 @@ where
     }
 
     patterns.into_iter().collect()
+}
+
+/// Get the middle bottommost pattern of the input.
+/// If the input is toric, then this pattern is the one having only one pixel
+/// in the bottom, and options.pattern_size - 1 pixels in the top
+pub fn get_ground_pattern<T: Clone>(input: &Vec2D<T>, options: &OverlappingWFCOptions) -> Vec2D<T> {
+    if options.periodic_input {
+        input.get_sub_vec(
+            input.height() - 1,
+            (input.width() - options.pattern_size) / 2,
+            options.pattern_size,
+            options.pattern_size,
+        )
+    } else {
+        input.get_sub_vec(
+            input.height() - options.pattern_size,
+            (input.width() - options.pattern_size) / 2,
+            options.pattern_size,
+            options.pattern_size,
+        )
+    }
 }
 
 #[cfg(test)]

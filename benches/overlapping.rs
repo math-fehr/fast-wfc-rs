@@ -1,6 +1,5 @@
 #![feature(test)]
 
-use std::env;
 use std::path::Path;
 
 use image::{DynamicImage, GenericImageView, Rgb};
@@ -35,13 +34,17 @@ fn bench_overlapping(bencher: &mut Bencher, file: &str, options: OverlappingWFCO
     let image = read_image(file);
     let image = image_to_vec2d(&image);
 
-    bencher.iter(|| loop {
-        let image = image.clone();
-        let options = options.clone();
-        let mut wfc = OverlappingWFC::new(image, options, [1; 16]);
-        let image = wfc.run();
-        if image.is_some() {
-            break;
+    bencher.iter(|| {
+        let mut i = 0;
+        loop {
+            i += 1;
+            let image = image.clone();
+            let options = options.clone();
+            let mut wfc = OverlappingWFC::new(image, options, [i; 16]);
+            let image = wfc.run();
+            if image.is_some() {
+                break;
+            }
         }
     });
 }
@@ -49,12 +52,13 @@ fn bench_overlapping(bencher: &mut Bencher, file: &str, options: OverlappingWFCO
 #[bench]
 fn bench_flowers(bencher: &mut Bencher) {
     let options = OverlappingWFCOptions {
-        periodic_input: false,
-        periodic_output: false,
+        periodic_input: true,
+        periodic_output: true,
         out_height: 21,
         out_width: 21,
         symmetry: 2,
         pattern_size: 3,
+        ground: true,
     };
 
     bench_overlapping(bencher, "images/Flowers.png", options);

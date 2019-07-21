@@ -53,6 +53,11 @@ impl WFC {
         }
     }
 
+    /// Get the underlying propagator
+    pub fn propagator(&mut self) -> &mut Propagator {
+        &mut self.propagator
+    }
+
     /// Do a step of the WFC algorithm.
     /// This mean that we take the cell that has the lowest positive entropy,
     /// choose a pattern relative to the distribution, and propagate the information

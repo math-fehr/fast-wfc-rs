@@ -29,7 +29,7 @@ fn vec2d_to_image(image: &Vec2D<Rgb<u8>>) -> ImageBuffer<Rgb<u8>, Vec<u8>>{
 
 fn write_to_file(file: &str, image: ImageBuffer<Rgb<u8>, Vec<u8>>) {
     let image = DynamicImage::ImageRgb8(image);
-    let fout = &mut File::create(&Path::new(&format!("result.png"))).unwrap();
+    let fout = &mut File::create(&Path::new(file)).unwrap();
     image.write_to(fout, image::PNG).unwrap();
 }
 
@@ -44,17 +44,24 @@ fn main() {
     let image = image_to_vec2d(&image);
 
     let options = OverlappingWFCOptions {
-        periodic_input: false,
-        periodic_output: false,
+        periodic_input: true,
+        periodic_output: true,
         out_height: 42,
         out_width: 42,
         symmetry: 2,
         pattern_size: 3,
+        ground: true,
     };
 
-    let mut wfc = OverlappingWFC::new(image, options, [1; 16]);
-    let image = wfc.run().unwrap();
+    let mut i = 0;
+    let mut result_image = None;
+    while result_image.is_none() {
+        i += 1;
+        let mut wfc = OverlappingWFC::new(image.clone(), options, [i; 16]);
+        result_image = wfc.run();
+    }
+    let image = result_image.unwrap();
 
     let image = vec2d_to_image(&image);
-    write_to_file(&file, image);
+    write_to_file("result.png", image);
 }
