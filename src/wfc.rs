@@ -28,7 +28,7 @@ impl WFC {
         let propagator = Propagator::new(
             height,
             width,
-            &patterns_weights,
+            patterns_weights.clone(),
             patterns_compatibility,
             is_toric,
         );
