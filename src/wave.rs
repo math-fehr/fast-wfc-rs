@@ -38,6 +38,7 @@ struct EntropyMemoization {
 }
 
 impl EntropyMemoization {
+    /// Create a new object given the weights of the patterns used in the wave.
     fn new(weights: &[Real], height: usize, width: usize) -> EntropyMemoization {
         let sum = weights.iter().sum();
         let plogp_sum = weights.iter().map(|x| x * x.ln()).sum();
