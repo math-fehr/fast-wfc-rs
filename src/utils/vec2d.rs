@@ -1,6 +1,7 @@
 //! Contain implementation of Vec2D, a 2D matrix represented by a Vec.
 
 use std::ops::{Index, IndexMut};
+use std::slice::{Iter, IterMut};
 
 /// A 2D matrix represented by a Vec.
 /// The Vec contains the values line after line.
@@ -34,6 +35,16 @@ impl<T> Vec2D<T> {
             width,
             data,
         }
+    }
+
+    /// Return an iterator on the data contained in the vec2D
+    pub fn iter(&self) -> impl Iterator<Item = &T> {
+        self.data.iter()
+    }
+
+    /// Return an iterator on the data contained in the vec2D
+    pub fn iter_mut(&mut self) -> impl Iterator<Item = &mut T> {
+        self.data.iter_mut()
     }
 
     /// Create a Vec2D using a generator function that will be called in all cells.
@@ -141,6 +152,24 @@ impl<T> IndexMut<usize> for Vec2D<T> {
         let begin_index = i * self.width;
         let end_index = (i + 1) * self.width;
         &mut self.data[begin_index..end_index]
+    }
+}
+
+impl<'a, T> IntoIterator for &'a Vec2D<T> {
+    type Item = &'a T;
+    type IntoIter = Iter<'a, T>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        self.data.iter()
+    }
+}
+
+impl<'a, T> IntoIterator for &'a mut Vec2D<T> {
+    type Item = &'a mut T;
+    type IntoIter = IterMut<'a, T>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        self.data.iter_mut()
     }
 }
 
