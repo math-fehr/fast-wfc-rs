@@ -55,9 +55,10 @@ fn main() {
 
     let mut i = 0;
     let mut result_image = None;
+    let mut wfc = OverlappingWFC::new(image.clone(), options, [i; 16]);
     while result_image.is_none() {
         i += 1;
-        let mut wfc = OverlappingWFC::new(image.clone(), options, [i; 16]);
+        wfc.restart([i; 16]);
         result_image = wfc.run();
     }
     let image = result_image.unwrap();

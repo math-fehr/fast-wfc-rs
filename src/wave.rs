@@ -94,6 +94,17 @@ impl Wave {
         }
     }
 
+    /// Set every element in the wave to true
+    pub fn reset(&mut self) {
+        for v in &mut self.data {
+            for i in v {
+                *i = true;
+            }
+        }
+        self.entropy_memoization =
+            EntropyMemoization::new(&self.weights, self.data.height(), self.data.width());
+    }
+
     /// Return true if pattern can be placed in cell (i, j).
     pub fn get(&self, i: usize, j: usize, pattern: usize) -> bool {
         self.data[i][j][pattern]

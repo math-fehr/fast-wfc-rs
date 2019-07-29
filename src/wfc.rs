@@ -17,6 +17,8 @@ pub struct WFC {
 }
 
 impl WFC {
+    /// Create the object containing all the information to perform the WFC
+    /// algorithm.
     pub fn new(
         is_toric: bool,
         seed: [u8; 16],
@@ -37,6 +39,12 @@ impl WFC {
             patterns_weights,
             propagator,
         }
+    }
+
+    /// Restart WFC.
+    pub fn restart(&mut self, seed: [u8; 16]) {
+        self.propagator.reset();
+        self.rng_gen = XorShiftRng::from_seed(seed);
     }
 
     /// Do steps of the wfc algorithm until completion

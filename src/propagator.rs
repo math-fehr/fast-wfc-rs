@@ -63,6 +63,23 @@ impl Propagator {
         }
     }
 
+    /// Reset the propagator by setting every element in the wave to true.
+    pub fn reset(&mut self) {
+        self.wave.reset();
+
+        let patterns_compatibility = &mut self.patterns_compatibility;
+        for v_i in &mut self.compatible {
+            for v_j in v_i {
+                for (pattern, v_p) in v_j.iter_mut().enumerate() {
+                    *v_p = DirArray::new_generator(|direction| {
+                        patterns_compatibility[pattern][direction.opposite()].len()
+                            as isize
+                    });
+                }
+            }
+        }
+    }
+
     /// Return a reference to the owned wave
     pub fn wave(&self) -> &Wave {
         &self.wave

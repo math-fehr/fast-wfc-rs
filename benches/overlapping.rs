@@ -8,7 +8,7 @@ use fast_wfc::overlapping_wfc::*;
 use fast_wfc::utils::vec2d::*;
 
 extern crate test;
-use test::{Bencher, black_box};
+use test::Bencher;
 
 fn read_image(filepath: &str) -> DynamicImage {
     image::open(&Path::new(&filepath)).unwrap()
@@ -33,18 +33,16 @@ fn image_to_vec2d(image: &DynamicImage) -> Vec2D<Rgb<u8>> {
 fn bench_overlapping(bencher: &mut Bencher, file: &str, options: OverlappingWFCOptions) {
     let image = read_image(file);
     let image = image_to_vec2d(&image);
-
+    let mut i = 0;
+    let mut wfc = OverlappingWFC::new(image, options, [i; 16]);
     bencher.iter(|| {
-        let mut i = 0;
         loop {
-            i += 1;
-            let image = image.clone();
-            let options = options.clone();
-            let mut wfc = OverlappingWFC::new(image, options, [i; 16]);
+            wfc.restart([i; 16]);
             let image = wfc.run();
             if image.is_some() {
                 break;
             }
+            i += 1;
         }
     });
 }
@@ -67,10 +65,9 @@ fn bench_flowers(bencher: &mut Bencher) {
 fn bench_restart(bencher: &mut Bencher, file: &str, options: OverlappingWFCOptions) {
     let image = read_image(file);
     let image = image_to_vec2d(&image);
+    let mut wfc = OverlappingWFC::new(image, options, [0; 16]);
     bencher.iter(|| {
-        let image = image.clone();
-        let options = options.clone();
-        black_box(OverlappingWFC::new(image, options, [0; 16]));
+        wfc.restart([0; 16]);
     });
 }
 

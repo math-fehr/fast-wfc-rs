@@ -20,12 +20,15 @@ pub struct OverlappingWFCOptions {
 
 /// Class used for the overlapping WFC
 pub struct OverlappingWFC<T> {
-    options: OverlappingWFCOptions,
     wfc: WFC,
+    options: OverlappingWFCOptions,
     patterns: Vec<Vec2D<T>>,
+    input: Vec2D<T>,
 }
 
 impl<T: Eq + Hash + Clone> OverlappingWFC<T> {
+
+    /// Given an image, create a WFC object for the overlapping algorithm.
     pub fn new(
         input: Vec2D<T>,
         options: OverlappingWFCOptions,
@@ -54,19 +57,28 @@ impl<T: Eq + Hash + Clone> OverlappingWFC<T> {
         );
 
         let mut wfc = OverlappingWFC {
-            options,
             wfc,
+            options,
             patterns,
+            input,
         };
         if options.ground {
-            wfc.init_ground(&input);
+            wfc.init_ground();
         }
         wfc
     }
 
+    /// Reset the WFC algorithm
+    pub fn restart(&mut self, seed: [u8; 16]) {
+        self.wfc.restart(seed);
+        if self.options.ground {
+            self.init_ground();
+        }
+    }
+
     /// Initialize the ground, given the ground pattern
-    fn init_ground(&mut self, input: &Vec2D<T>) {
-        let ground = get_ground_pattern(input, &self.options);
+    fn init_ground(&mut self) {
+        let ground = get_ground_pattern(&self.input, &self.options);
         let ground_id = self
             .patterns
             .iter()
