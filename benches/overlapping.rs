@@ -8,7 +8,7 @@ use fast_wfc::overlapping_wfc::*;
 use fast_wfc::utils::vec2d::*;
 
 extern crate test;
-use test::test::Bencher;
+use test::{Bencher, black_box};
 
 fn read_image(filepath: &str) -> DynamicImage {
     image::open(&Path::new(&filepath)).unwrap()
@@ -62,4 +62,29 @@ fn bench_flowers(bencher: &mut Bencher) {
     };
 
     bench_overlapping(bencher, "images/Flowers.png", options);
+}
+
+fn bench_restart(bencher: &mut Bencher, file: &str, options: OverlappingWFCOptions) {
+    let image = read_image(file);
+    let image = image_to_vec2d(&image);
+    bencher.iter(|| {
+        let image = image.clone();
+        let options = options.clone();
+        black_box(OverlappingWFC::new(image, options, [0; 16]));
+    });
+}
+
+#[bench]
+fn bench_flowers_restart(bencher: &mut Bencher) {
+    let options = OverlappingWFCOptions {
+        periodic_input: true,
+        periodic_output: true,
+        out_height: 21,
+        out_width: 21,
+        symmetry: 2,
+        pattern_size: 3,
+        ground: true,
+    };
+
+    bench_restart(bencher, "images/Flowers.png", options);
 }
