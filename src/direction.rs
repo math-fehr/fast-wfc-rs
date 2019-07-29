@@ -1,6 +1,7 @@
 //! A direction parallel to the axes in a 2D space
 
 use std::ops::{Index, IndexMut};
+use std::slice::{Iter, IterMut};
 use Direction::{Down, Left, Right, Up};
 
 /// The enum representing a direction parallel to the axes in a 2D space
@@ -78,6 +79,25 @@ impl<T> Index<Direction> for DirArray<T> {
         &self.data[dir as u8 as usize]
     }
 }
+
+impl<'a, T> IntoIterator for &'a DirArray<T> {
+    type Item = &'a T;
+    type IntoIter = Iter<'a, T>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        self.data.into_iter()
+    }
+}
+
+impl<'a, T> IntoIterator for &'a mut DirArray<T> {
+    type Item = &'a mut T;
+    type IntoIter = IterMut<'a, T>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        (&mut self.data).into_iter()
+    }
+}
+
 
 impl<T> IndexMut<Direction> for DirArray<T> {
     fn index_mut(&mut self, dir: Direction) -> &mut Self::Output {
