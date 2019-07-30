@@ -3,6 +3,7 @@
 use crate::direction::*;
 use crate::wave::Wave;
 use crate::Real;
+use crate::utils::vec3d::Vec3D;
 
 /// Propagator is a wrapper around Wave, that ensure that the constraints between
 /// neighbors are respected.
@@ -18,7 +19,7 @@ pub struct Propagator {
     /// in the wave that can be placed in the cell at direction dir of (y,x), without
     /// being in contradiction with pattern placed in (y,x). If wave[y][x][pattern]
     /// is false, then compatible[y][x][pattern] has every element negative or null.
-    compatible: Vec<Vec<Vec<DirArray<isize>>>>,
+    compatible: Vec3D<DirArray<isize>>,
     /// The set of tuples (y, x, pattern) that should be propagated.
     /// Such a tuple should be propagated if wave[y][x][pattern] is set to false.
     propagating_queue: Vec<(usize, usize, usize)>,
@@ -37,22 +38,12 @@ impl Propagator {
         let n_patterns = weights.len();
         let wave = Wave::new(height, width, weights);
 
-        let compatible = (0..height)
-            .map(|_| {
-                (0..width)
-                    .map(|_| {
-                        (0..n_patterns)
-                            .map(|pattern| {
-                                DirArray::new_generator(|direction| {
-                                    patterns_compatibility[pattern][direction.opposite()].len()
-                                        as isize
-                                })
-                            })
-                            .collect()
-                    })
-                    .collect()
+        let compatible = Vec3D::new_generator(height, width, n_patterns, |_,_,pattern| {
+            DirArray::new_generator(|direction| {
+                patterns_compatibility[pattern][direction.opposite()].len()
+                    as isize
             })
-            .collect();
+        });
 
         Propagator {
             wave,
@@ -67,11 +58,15 @@ impl Propagator {
     pub fn reset(&mut self) {
         self.wave.reset();
 
-        let patterns_compatibility = &mut self.patterns_compatibility;
-        for v_i in &mut self.compatible {
-            for v_j in v_i {
-                for (pattern, v_p) in v_j.iter_mut().enumerate() {
-                    *v_p = DirArray::new_generator(|direction| {
+        //let patterns_compatibility = &mut self.patterns_compatibility;
+        let height = self.wave().height();
+        let width = self.wave().width();
+        let compatible = &mut self.compatible;
+        let patterns_compatibility = &self.patterns_compatibility;
+        for i in 0..height {
+            for j in 0..width {
+                for (pattern, val) in compatible[(i,j)].iter_mut().enumerate() {
+                    *val = DirArray::new_generator(|direction| {
                         patterns_compatibility[pattern][direction.opposite()].len() as isize
                     });
                 }
@@ -87,9 +82,9 @@ impl Propagator {
     /// Remove pattern from the wave on cell (i, j).
     /// This means that pattern cannot be placed in cell (i, j).
     pub fn unset(&mut self, y: usize, x: usize, pattern: usize) {
-        if self.wave[y][x][pattern] {
+        if self.wave.get(y, x, pattern) {
             self.wave.unset(y, x, pattern);
-            self.compatible[y][x][pattern] = DirArray::new(&0);
+            *self.compatible.get_mut(y,x,pattern) = DirArray::new(&0);
             self.propagating_queue.push((y, x, pattern));
             self.propagate();
         }
@@ -128,7 +123,7 @@ impl Propagator {
                     // We decrease the number of compatible patterns in the opposite
                     // direction. If the pattern was discarded from the wave, the element is
                     // negative.
-                    let value = &mut self.compatible[y2][x2][pattern2];
+                    let value = self.compatible.get_mut(y2, x2, pattern2);
                     value[*direction] -= 1;
 
                     // If the elemnt was set to 0 with this operation, we need to remove the

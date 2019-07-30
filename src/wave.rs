@@ -2,6 +2,7 @@
 //! which is the possible patterns for each cell, and the entropy of the cell
 
 use crate::utils::vec2d::Vec2D;
+use crate::utils::vec3d::Vec3D;
 use crate::Real;
 use std::ops::Index;
 
@@ -68,7 +69,7 @@ impl EntropyMemoization {
 /// Also, contains information about cell entropy.
 pub struct Wave {
     /// The wave data. data[index][pattern] is equal to 0 if the pattern can be placed in the cell index
-    data: Vec2D<Vec<bool>>,
+    data: Vec3D<bool>,
     /// The weigths of each pattern
     weights: Vec<Real>,
     /// The values memoized to compute the entropy of each cell
@@ -88,7 +89,7 @@ impl Wave {
     pub fn new(height: usize, width: usize, weights: Vec<Real>) -> Self {
         let entropy_memoization = EntropyMemoization::new(&weights, height, width);
         Wave {
-            data: Vec2D::new(height, width, &vec![true; weights.len()]),
+            data: Vec3D::new(height, width, weights.len(), &true),
             weights,
             entropy_memoization: entropy_memoization,
         }
@@ -96,25 +97,23 @@ impl Wave {
 
     /// Set every element in the wave to true
     pub fn reset(&mut self) {
-        for v in &mut self.data {
-            for i in v {
-                *i = true;
-            }
+        for i in &mut self.data {
+            *i = true;
         }
         self.entropy_memoization =
-            EntropyMemoization::new(&self.weights, self.data.height(), self.data.width());
+            EntropyMemoization::new(&self.weights, self.height(), self.width());
     }
 
     /// Return true if pattern can be placed in cell (i, j).
     pub fn get(&self, i: usize, j: usize, pattern: usize) -> bool {
-        self.data[i][j][pattern]
+        *self.data.get(i, j, pattern)
     }
 
     /// Remove pattern from the wave on cell (i, j).
     /// This means that pattern cannot be placed in cell (i, j).
     pub fn unset(&mut self, i: usize, j: usize, pattern: usize) {
-        if self.data[i][j][pattern] {
-            self.data[i][j][pattern] = false;
+        if *self.data.get(i, j, pattern) {
+            *self.data.get_mut(i, j, pattern) = false;
             self.entropy_memoization.update(i, j, self.weights[pattern]);
         }
     }
@@ -128,8 +127,8 @@ impl Wave {
         let mut min = std::f64::INFINITY as Real;
         let mut argmin = (-1, -1);
 
-        for i in 0..self.data.height() {
-            for j in 0..self.data.width() {
+        for i in 0..self.height() {
+            for j in 0..self.width() {
                 let n_patterns = self.entropy_memoization.data[i][j].n_patterns;
                 if n_patterns == 1 {
                     continue;
@@ -155,19 +154,19 @@ impl Wave {
 
     /// Get the wave height
     pub fn height(&self) -> usize {
-        self.data.height()
+        self.data.depth()
     }
 
     /// Get the wave width
     pub fn width(&self) -> usize {
-        self.data.width()
+        self.data.height()
     }
 }
 
-impl Index<usize> for Wave {
-    type Output = [Vec<bool>];
+impl Index<(usize, usize)> for Wave {
+    type Output = [bool];
 
-    fn index(&self, i: usize) -> &Self::Output {
+    fn index(&self, i: (usize, usize)) -> &Self::Output {
         &self.data[i]
     }
 }

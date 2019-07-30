@@ -71,7 +71,7 @@ impl WFC {
     /// choose a pattern relative to the distribution, and propagate the information
     pub fn step(&mut self) -> Result<(), WaveError> {
         let (y, x) = self.propagator.wave().get_min_entropy()?;
-        let weights = self.propagator.wave()[y][x]
+        let weights = self.propagator.wave()[(y,x)]
             .iter()
             .zip(self.patterns_weights.iter())
             .map(|(b, w)| if *b { *w } else { 0.0 });
@@ -99,7 +99,7 @@ impl WFC {
         let mut data = Vec2D::new(height, width, &0);
         for i in 0..height {
             for j in 0..width {
-                let cell_values: Vec<_> = wave[i][j]
+                let cell_values: Vec<_> = wave[(i,j)]
                     .iter()
                     .enumerate()
                     .filter_map(|(v, b)| if *b { Some(v) } else { None })
