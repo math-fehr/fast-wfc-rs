@@ -153,11 +153,6 @@ impl Wave {
         }
     }
 
-    /// Get a reference to the actual wave data.
-    pub fn data(&self) -> &Vec2D<Vec<bool>> {
-        &self.data
-    }
-
     /// Get the wave height
     pub fn height(&self) -> usize {
         self.data.height()

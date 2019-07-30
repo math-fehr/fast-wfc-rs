@@ -72,8 +72,7 @@ impl Propagator {
             for v_j in v_i {
                 for (pattern, v_p) in v_j.iter_mut().enumerate() {
                     *v_p = DirArray::new_generator(|direction| {
-                        patterns_compatibility[pattern][direction.opposite()].len()
-                            as isize
+                        patterns_compatibility[pattern][direction.opposite()].len() as isize
                     });
                 }
             }
@@ -107,17 +106,17 @@ impl Propagator {
                 // The coordinate of a neighboring cell
                 let (y2, x2) = if self.is_toric {
                     (
-                        (y1 as isize + dy + self.wave.data().height() as isize) as usize
-                            % self.wave.data().height(),
-                        (x1 as isize + dx + self.wave.data().width() as isize) as usize
-                            % self.wave.data().width(),
+                        (y1 as isize + dy + self.wave.height() as isize) as usize
+                            % self.wave.height(),
+                        (x1 as isize + dx + self.wave.width() as isize) as usize
+                            % self.wave.width(),
                     )
                 } else {
                     let (y2, x2) = (y1 as isize + dy, x1 as isize + dx);
-                    if x2 < 0 || x2 >= self.wave.data().width() as isize {
+                    if x2 < 0 || x2 >= self.wave.width() as isize {
                         continue;
                     }
-                    if y2 < 0 || y2 >= self.wave.data().height() as isize {
+                    if y2 < 0 || y2 >= self.wave.height() as isize {
                         continue;
                     }
                     (y2 as usize, x2 as usize)
