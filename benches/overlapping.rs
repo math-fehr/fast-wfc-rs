@@ -48,7 +48,7 @@ fn bench_overlapping(bencher: &mut Bencher, file: &str, options: OverlappingWFCO
 }
 
 #[bench]
-fn bench_flowers(bencher: &mut Bencher) {
+fn bench_flowers_small(bencher: &mut Bencher) {
     let options = OverlappingWFCOptions {
         periodic_input: true,
         periodic_output: true,
@@ -62,6 +62,37 @@ fn bench_flowers(bencher: &mut Bencher) {
     bench_overlapping(bencher, "images/Flowers.png", options);
 }
 
+#[bench]
+fn bench_flowers_medium(bencher: &mut Bencher) {
+    let options = OverlappingWFCOptions {
+        periodic_input: true,
+        periodic_output: true,
+        out_height: 42,
+        out_width: 42,
+        symmetry: 2,
+        pattern_size: 3,
+        ground: true,
+    };
+
+    bench_overlapping(bencher, "images/Flowers.png", options);
+}
+
+#[bench]
+fn bench_flowers_big(bencher: &mut Bencher) {
+    let options = OverlappingWFCOptions {
+        periodic_input: true,
+        periodic_output: true,
+        out_height: 63,
+        out_width: 63,
+        symmetry: 2,
+        pattern_size: 3,
+        ground: true,
+    };
+
+    bench_overlapping(bencher, "images/Flowers.png", options);
+}
+
+
 fn bench_restart(bencher: &mut Bencher, file: &str, options: OverlappingWFCOptions) {
     let image = read_image(file);
     let image = image_to_vec2d(&image);
@@ -72,7 +103,7 @@ fn bench_restart(bencher: &mut Bencher, file: &str, options: OverlappingWFCOptio
 }
 
 #[bench]
-fn bench_flowers_restart(bencher: &mut Bencher) {
+fn bench_flowers_restart_small(bencher: &mut Bencher) {
     let options = OverlappingWFCOptions {
         periodic_input: true,
         periodic_output: true,
@@ -85,3 +116,34 @@ fn bench_flowers_restart(bencher: &mut Bencher) {
 
     bench_restart(bencher, "images/Flowers.png", options);
 }
+
+#[bench]
+fn bench_flowers_restart_medium(bencher: &mut Bencher) {
+    let options = OverlappingWFCOptions {
+        periodic_input: true,
+        periodic_output: true,
+        out_height: 42,
+        out_width: 42,
+        symmetry: 2,
+        pattern_size: 3,
+        ground: true,
+    };
+
+    bench_restart(bencher, "images/Flowers.png", options);
+}
+
+#[bench]
+fn bench_flowers_restart_big(bencher: &mut Bencher) {
+    let options = OverlappingWFCOptions {
+        periodic_input: true,
+        periodic_output: true,
+        out_height: 63,
+        out_width: 63,
+        symmetry: 2,
+        pattern_size: 3,
+        ground: true,
+    };
+
+    bench_restart(bencher, "images/Flowers.png", options);
+}
+
