@@ -66,12 +66,12 @@ impl<T> Vec2D<T> {
         self.data
     }
 
-    /// Get the height of the Vec2D.
+    /// Get the size of the first dimension.
     pub fn height(&self) -> usize {
         self.height
     }
 
-    /// Get the width of the Vec2D.
+    /// Get the size of the second dimension.
     pub fn width(&self) -> usize {
         self.width
     }
