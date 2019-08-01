@@ -5,6 +5,8 @@ use crate::utils::vec2d::Vec2D;
 use crate::utils::vec3d::Vec3D;
 use crate::Real;
 use std::ops::Index;
+use rand::Rng;
+use rand_xorshift::XorShiftRng;
 
 /// Values memoized to compute the entropy. Keeping these allow us to update quickly
 /// the entropy when modifying the wave.
@@ -123,8 +125,9 @@ impl Wave {
         self.entropy_memoization.entropy(i, j)
     }
 
-    pub fn get_min_entropy(&self) -> Result<(usize, usize), WaveError> {
+    pub fn get_min_entropy(&self, rng_gen: &mut XorShiftRng) -> Result<(usize, usize), WaveError> {
         let mut min = std::f64::INFINITY as Real;
+        let mut min_random = std::i32::MAX;
         let mut argmin = (-1, -1);
 
         for i in 0..self.height() {
@@ -141,6 +144,14 @@ impl Wave {
                 if entropy < min {
                     min = entropy;
                     argmin = (i as isize, j as isize);
+                    min_random = rng_gen.gen();
+                } else if entropy == min {
+                    let random = rng_gen.gen();
+                    if random < min_random {
+                        min = entropy;
+                        min_random = random;
+                        argmin = (i as isize, j as isize);
+                    }
                 }
             }
         }
