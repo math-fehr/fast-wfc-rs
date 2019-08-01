@@ -135,6 +135,15 @@ impl<T> Vec2D<T> {
 
         sub_vec
     }
+
+    /// Return an iterator which gives the cell index (i,j) as well as the value.
+    pub fn iter_enumerate(&self) -> impl Iterator<Item = ((usize, usize), &T)> {
+        self.data
+            .chunks_exact(self.width())
+            .enumerate()
+            .map(|(i, s)| s.iter().enumerate().map(move |(j, v)| ((i, j), v)))
+            .flatten()
+    }
 }
 
 impl<T> Index<usize> for Vec2D<T> {
