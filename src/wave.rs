@@ -4,9 +4,9 @@
 use crate::utils::vec2d::Vec2D;
 use crate::utils::vec3d::Vec3D;
 use crate::Real;
-use std::ops::Index;
 use rand::Rng;
 use rand_xorshift::XorShiftRng;
+use std::ops::Index;
 
 /// Values memoized to compute the entropy. Keeping these allow us to update quickly
 /// the entropy when modifying the wave.
@@ -130,28 +130,26 @@ impl Wave {
         let mut min_random = std::i32::MAX;
         let mut argmin = (-1, -1);
 
-        for i in 0..self.height() {
-            for j in 0..self.width() {
-                let n_patterns = self.entropy_memoization.data[i][j].n_patterns;
-                if n_patterns == 1 {
-                    continue;
-                }
-                if n_patterns == 0 {
-                    return Err(WaveError::Impossible);
-                }
+        for ((i, j), memoization) in self.entropy_memoization.data.iter_enumerate() {
+            let n_patterns = memoization.n_patterns;
+            if n_patterns == 1 {
+                continue;
+            }
+            if n_patterns == 0 {
+                return Err(WaveError::Impossible);
+            }
 
-                let entropy = self.get_entropy(i, j);
-                if entropy < min {
+            let entropy = memoization.entropy();
+            if entropy < min {
+                min = entropy;
+                argmin = (i as isize, j as isize);
+                min_random = rng_gen.gen();
+            } else if entropy == min {
+                let random = rng_gen.gen();
+                if random < min_random {
                     min = entropy;
+                    min_random = random;
                     argmin = (i as isize, j as isize);
-                    min_random = rng_gen.gen();
-                } else if entropy == min {
-                    let random = rng_gen.gen();
-                    if random < min_random {
-                        min = entropy;
-                        min_random = random;
-                        argmin = (i as isize, j as isize);
-                    }
                 }
             }
         }
