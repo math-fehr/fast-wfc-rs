@@ -55,7 +55,7 @@ fn generate_reflection_map(symmetry: Symmetry) -> Vec<usize> {
 /// An action is a sequence of rotations and reflections.
 /// Actions 0 to 3 are 0°, 90°, 180°, and 270° anticlockwise rotations.
 /// Actions 4 to 7 are actions 0 to 3 preceded by a reflection on the x axis.
-fn generate_action_map(symmetry: Symmetry) -> Vec<Vec<usize>> {
+pub fn generate_action_map(symmetry: Symmetry) -> Vec<Vec<usize>> {
     let rotation_map = generate_rotation_map(symmetry);
     let reflection_map = generate_reflection_map(symmetry);
     let size = rotation_map.len();
