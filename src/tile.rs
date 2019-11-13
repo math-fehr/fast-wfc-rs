@@ -1,6 +1,7 @@
 //! Contains the Symmetry implementation, and the Tile implementation.
 
 use crate::utils::vec2d::*;
+use crate::Real;
 
 /// The different kind of symmetries a 2D object can have.
 #[derive(Clone, Copy)]
@@ -125,15 +126,17 @@ where
 pub struct Tile<T> {
     data: Vec<Vec2D<T>>,
     symmetry: Symmetry,
+    weight: Real,
 }
 
 impl<T> Tile<T> {
     /// Create a new tile given a Vec2D representing an object.
-    pub fn new(data: Vec2D<T>, symmetry: Symmetry) -> Tile<T> where T: Clone {
+    pub fn new(data: Vec2D<T>, symmetry: Symmetry, weight: Real) -> Tile<T> where T: Clone {
         let oriented_data = generate_oriented(data, symmetry);
         Tile {
             data: oriented_data,
             symmetry,
+            weight,
         }
     }
 
@@ -145,6 +148,11 @@ impl<T> Tile<T> {
     /// Get the symmetry kinds of the tile.
     pub fn symmetry(&self) -> Symmetry {
         self.symmetry
+    }
+
+    /// Get the weight of the tile
+    pub fn weight(&self) -> Real {
+        self.weight
     }
 }
 
