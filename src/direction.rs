@@ -72,11 +72,11 @@ impl<T> DirArray<T> {
     }
 
     /// Modify the data according to the given closure.
-    pub fn map<F: Fn(T) -> T>(&mut self, f: F) {
-        self.data[0] = f(self.data[0]);
-        self.data[1] = f(self.data[1]);
-        self.data[2] = f(self.data[2]);
-        self.data[3] = f(self.data[3]);
+    pub fn map<U, F: Fn(T) -> U>(self, f: F) -> DirArray<U> {
+        let [v0, v1, v2, v3] = self.data;
+        DirArray {
+            data: [ f(v0), f(v1), f(v2), f(v3), ],
+        }
     }
 }
 
