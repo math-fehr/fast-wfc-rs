@@ -45,7 +45,7 @@ fn main() {
     } else {
         panic!("Please enter a file")
     };
-;
+
     let image = read_image(&file);
     let image = image_to_vec2d(&image);
 

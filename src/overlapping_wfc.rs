@@ -422,5 +422,4 @@ mod test {
 
         assert!(!is_compatible(&pattern1, &pattern2, Direction::Right))
     }
-
 }
