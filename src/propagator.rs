@@ -1,9 +1,9 @@
 //! Contain the Propagator stuct, that propagates information through the wave.
 
 use crate::direction::*;
+use crate::utils::vec3d::Vec3D;
 use crate::wave::Wave;
 use crate::Real;
-use crate::utils::vec3d::Vec3D;
 
 /// Propagator is a wrapper around Wave, that ensure that the constraints between
 /// neighbors are respected.
@@ -38,10 +38,9 @@ impl Propagator {
         let n_patterns = weights.len();
         let wave = Wave::new(height, width, weights);
 
-        let compatible = Vec3D::new_generator(height, width, n_patterns, |_,_,pattern| {
+        let compatible = Vec3D::new_generator(height, width, n_patterns, |_, _, pattern| {
             DirArray::new_generator(|direction| {
-                patterns_compatibility[pattern][direction.opposite()].len()
-                    as isize
+                patterns_compatibility[pattern][direction.opposite()].len() as isize
             })
         });
 
@@ -65,7 +64,7 @@ impl Propagator {
         let patterns_compatibility = &self.patterns_compatibility;
         for i in 0..height {
             for j in 0..width {
-                for (pattern, val) in compatible[(i,j)].iter_mut().enumerate() {
+                for (pattern, val) in compatible[(i, j)].iter_mut().enumerate() {
                     *val = DirArray::new_generator(|direction| {
                         patterns_compatibility[pattern][direction.opposite()].len() as isize
                     });
@@ -84,7 +83,7 @@ impl Propagator {
     pub fn unset(&mut self, y: usize, x: usize, pattern: usize) {
         if self.wave.get(y, x, pattern) {
             self.wave.unset(y, x, pattern);
-            *self.compatible.get_mut(y,x,pattern) = DirArray::new(&0);
+            *self.compatible.get_mut(y, x, pattern) = DirArray::new(&0);
             self.propagating_queue.push((y, x, pattern));
             self.propagate();
         }

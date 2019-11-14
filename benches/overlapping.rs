@@ -35,15 +35,13 @@ fn bench_overlapping(bencher: &mut Bencher, file: &str, options: OverlappingWFCO
     let image = image_to_vec2d(&image);
     let mut i = 0;
     let mut wfc = OverlappingWFC::new(image, options, [i; 16]);
-    bencher.iter(|| {
-        loop {
-            wfc.restart([i; 16]);
-            let image = wfc.run();
-            if image.is_some() {
-                break;
-            }
-            i += 1;
+    bencher.iter(|| loop {
+        wfc.restart([i; 16]);
+        let image = wfc.run();
+        if image.is_some() {
+            break;
         }
+        i += 1;
     });
 }
 
@@ -91,7 +89,6 @@ fn bench_flowers_big(bencher: &mut Bencher) {
 
     bench_overlapping(bencher, "images/Flowers.png", options);
 }
-
 
 fn bench_restart(bencher: &mut Bencher, file: &str, options: OverlappingWFCOptions) {
     let image = read_image(file);
@@ -146,4 +143,3 @@ fn bench_flowers_restart_big(bencher: &mut Bencher) {
 
     bench_restart(bencher, "images/Flowers.png", options);
 }
-

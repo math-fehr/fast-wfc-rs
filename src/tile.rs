@@ -118,7 +118,6 @@ where
     }
 }
 
-
 /// 2D Objects that are reflections and rotations of themselves.
 /// Item i is obtained by doing action i on item 0.
 /// See [generate_action_map] to see what actions do.
@@ -131,7 +130,10 @@ pub struct Tile<T> {
 
 impl<T> Tile<T> {
     /// Create a new tile given a Vec2D representing an object.
-    pub fn new(data: Vec2D<T>, symmetry: Symmetry, weight: Real) -> Tile<T> where T: Clone {
+    pub fn new(data: Vec2D<T>, symmetry: Symmetry, weight: Real) -> Tile<T>
+    where
+        T: Clone,
+    {
         let oriented_data = generate_oriented(data, symmetry);
         Tile {
             data: oriented_data,
@@ -155,7 +157,6 @@ impl<T> Tile<T> {
         self.weight
     }
 }
-
 
 #[cfg(test)]
 mod test {

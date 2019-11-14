@@ -48,10 +48,7 @@ impl<T> Vec3D<T> {
     ) -> Vec3D<T> {
         let generator = &generator;
         let vec = (0..depth)
-            .map(|i| (0..height).map(
-                move |j| (0..width).map(
-                    move |k| generator(i, j, k))
-            ))
+            .map(|i| (0..height).map(move |j| (0..width).map(move |k| generator(i, j, k))))
             .flatten()
             .flatten()
             .collect();
@@ -140,14 +137,14 @@ mod tests {
     #[test]
     fn test_get() {
         let vec = Vec3D::from_vec(vec![0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11], 2, 3, 2);
-        assert_eq!(*vec.get(0,2,1), 5);
-        assert_eq!(*vec.get(1,0,1), 7);
+        assert_eq!(*vec.get(0, 2, 1), 5);
+        assert_eq!(*vec.get(1, 0, 1), 7);
     }
 
     #[test]
     fn test_index() {
         let vec = Vec3D::from_vec(vec![0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11], 2, 3, 2);
-        assert_eq!(vec[(0,2)][1], 5);
-        assert_eq!(vec[(1,0)][1], 7);
+        assert_eq!(vec[(0, 2)][1], 5);
+        assert_eq!(vec[(1, 0)][1], 7);
     }
 }

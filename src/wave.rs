@@ -6,6 +6,7 @@ use crate::utils::vec3d::Vec3D;
 use crate::Real;
 use rand::Rng;
 use rand_xorshift::XorShiftRng;
+use std::cmp::Ordering;
 use std::ops::Index;
 
 /// Values memoized to compute the entropy. Keeping these allow us to update quickly
@@ -93,7 +94,7 @@ impl Wave {
         Wave {
             data: Vec3D::new(height, width, weights.len(), &true),
             weights,
-            entropy_memoization: entropy_memoization,
+            entropy_memoization,
         }
     }
 
@@ -140,17 +141,21 @@ impl Wave {
             }
 
             let entropy = memoization.entropy();
-            if entropy < min {
-                min = entropy;
-                argmin = (i as isize, j as isize);
-                min_random = rng_gen.gen();
-            } else if entropy == min {
-                let random = rng_gen.gen();
-                if random < min_random {
+            match entropy.partial_cmp(&min) {
+                Some(Ordering::Less) => {
                     min = entropy;
-                    min_random = random;
                     argmin = (i as isize, j as isize);
+                    min_random = rng_gen.gen();
                 }
+                Some(Ordering::Equal) => {
+                    let random = rng_gen.gen();
+                    if random < min_random {
+                        min = entropy;
+                        min_random = random;
+                        argmin = (i as isize, j as isize);
+                    }
+                }
+                _ => (),
             }
         }
 

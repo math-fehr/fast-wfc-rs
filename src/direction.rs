@@ -20,7 +20,7 @@ impl Direction {
             Direction::Down => Direction::Up,
             Direction::Left => Direction::Right,
             Direction::Right => Direction::Left,
-            Direction::Up => Direction::Down
+            Direction::Up => Direction::Down,
         }
     }
 
@@ -80,7 +80,7 @@ impl<T> DirArray<T> {
     pub fn map<U, F: Fn(T) -> U>(self, f: F) -> DirArray<U> {
         let [v0, v1, v2, v3] = self.data;
         DirArray {
-            data: [ f(v0), f(v1), f(v2), f(v3), ],
+            data: [f(v0), f(v1), f(v2), f(v3)],
         }
     }
 }
@@ -98,7 +98,7 @@ impl<'a, T> IntoIterator for &'a DirArray<T> {
     type IntoIter = Iter<'a, T>;
 
     fn into_iter(self) -> Self::IntoIter {
-        self.data.into_iter()
+        self.data.iter()
     }
 }
 
@@ -107,10 +107,9 @@ impl<'a, T> IntoIterator for &'a mut DirArray<T> {
     type IntoIter = IterMut<'a, T>;
 
     fn into_iter(self) -> Self::IntoIter {
-        (&mut self.data).into_iter()
+        self.data.iter_mut()
     }
 }
-
 
 impl<T> IndexMut<Direction> for DirArray<T> {
     fn index_mut(&mut self, dir: Direction) -> &mut Self::Output {

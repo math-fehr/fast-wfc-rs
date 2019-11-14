@@ -29,7 +29,7 @@ impl<T: Copy> TilingWFC<T> {
     /// Create a new structure for a tiling WFC problem
     pub fn new(
         tiles: Vec<Tile<T>>,
-        neighbors: &Vec<[usize; 4]>,
+        neighbors: &[[usize; 4]],
         height: usize,
         width: usize,
         options: TilingWFCOptions,
@@ -86,7 +86,7 @@ impl<T: Copy> TilingWFC<T> {
 }
 
 /// Generate mapping from id to oriented tiles and vice versa.
-fn generate_oriented_tile_ids<T>(tiles: &Vec<Tile<T>>) -> (Vec<(usize, usize)>, Vec<Vec<usize>>) {
+fn generate_oriented_tile_ids<T>(tiles: &[Tile<T>]) -> (Vec<(usize, usize)>, Vec<Vec<usize>>) {
     let id_to_oriented_tile = tiles
         .iter()
         .enumerate()
@@ -109,10 +109,10 @@ fn generate_oriented_tile_ids<T>(tiles: &Vec<Tile<T>>) -> (Vec<(usize, usize)>, 
 
 /// Generate a propagator given the neighbors list
 fn generate_propagator<T>(
-    neighbors: &Vec<[usize; 4]>,
-    tiles: &Vec<Tile<T>>,
-    id_to_oriented_tile: &Vec<(usize, usize)>,
-    oriented_tile_ids: &Vec<Vec<usize>>,
+    neighbors: &[[usize; 4]],
+    tiles: &[Tile<T>],
+    id_to_oriented_tile: &[(usize, usize)],
+    oriented_tile_ids: &[Vec<usize>],
 ) -> Vec<DirArray<Vec<usize>>> {
     let nb_oriented_tiles = id_to_oriented_tile.len();
     let mut dense_propagator =
@@ -162,7 +162,7 @@ fn generate_propagator<T>(
 }
 
 /// Get the weight of all oriented tiles
-fn get_tiles_weights<T>(tiles: &Vec<Tile<T>>) -> Vec<Real> {
+fn get_tiles_weights<T>(tiles: &[Tile<T>]) -> Vec<Real> {
     tiles
         .iter()
         .map(|tile| {

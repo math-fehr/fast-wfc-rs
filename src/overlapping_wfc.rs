@@ -27,7 +27,6 @@ pub struct OverlappingWFC<T> {
 }
 
 impl<T: Eq + Hash + Clone> OverlappingWFC<T> {
-
     /// Given an image, create a WFC object for the overlapping algorithm.
     pub fn new(
         input: Vec2D<T>,
@@ -83,7 +82,7 @@ impl<T: Eq + Hash + Clone> OverlappingWFC<T> {
             .patterns
             .iter()
             .enumerate()
-            .find_map(|(i, x)| if *x == ground {Some(i)} else {None})
+            .find_map(|(i, x)| if *x == ground { Some(i) } else { None })
             .unwrap();
 
         let propagator = self.wfc.propagator();
@@ -97,7 +96,7 @@ impl<T: Eq + Hash + Clone> OverlappingWFC<T> {
             }
         }
 
-        for i in 0..height-1 {
+        for i in 0..height - 1 {
             for j in 0..width {
                 self.wfc.propagator().unset(i, j, ground_id);
             }
