@@ -16,7 +16,12 @@ pub enum Direction {
 impl Direction {
     /// Get the opposite direction
     pub fn opposite(self) -> Self {
-        unsafe { std::mem::transmute(3 - (self as u8)) }
+        match self {
+            Direction::Down => Direction::Up,
+            Direction::Left => Direction::Right,
+            Direction::Right => Direction::Left,
+            Direction::Up => Direction::Down
+        }
     }
 
     /// Get all possible directions
