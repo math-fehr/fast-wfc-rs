@@ -17,10 +17,6 @@ pub struct TilingWFC<T> {
     tiles: Vec<Tile<T>>,
     /// Associate an oriented tile id to its tile number, and its orientation
     id_to_oriented_tiles: Vec<(usize, usize)>,
-    /// Associate a tile number and its orientation to an oriented tile id
-    oriented_tile_ids: Vec<Vec<usize>>,
-    /// Options for the tiling wfc
-    options: TilingWFCOptions,
     /// The underlying WFC problem
     wfc: WFC,
 }
@@ -50,8 +46,6 @@ impl<T: Copy> TilingWFC<T> {
         TilingWFC {
             tiles,
             id_to_oriented_tiles,
-            oriented_tile_ids,
-            options,
             wfc,
         }
     }
@@ -80,8 +74,14 @@ impl<T: Copy> TilingWFC<T> {
         tiling
     }
 
+    /// Run the wfc algorithm
     pub fn run(&mut self) -> Option<Vec2D<T>> {
         self.wfc.run().map(|x| self.id_to_tiling(x))
+    }
+
+    /// Reset the WFC algorithm
+    pub fn restart(&mut self, seed: [u8; 16]) {
+        self.wfc.restart(seed);
     }
 }
 
