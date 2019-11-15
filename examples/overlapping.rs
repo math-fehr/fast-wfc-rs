@@ -117,7 +117,6 @@ fn main() {
                     };
 
                     run_example(name, options, screenshots);
-
                 }
                 _ => (),
             },
